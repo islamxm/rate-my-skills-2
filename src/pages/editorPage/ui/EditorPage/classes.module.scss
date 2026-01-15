@@ -1,0 +1,21 @@
+.wrapper {
+  display: grid;
+  height: 100vh;
+  grid-template-areas: "left center right";
+  grid-template-columns: 200px 1fr 200px;
+
+  .left {
+    grid-area: left;
+    border: 1px solid red;
+  }
+
+  .center {
+    grid-area: center;
+    border: 1px solid red;
+  }
+
+  .right {
+    grid-area: right;
+    border: 1px solid red;
+  }
+}
