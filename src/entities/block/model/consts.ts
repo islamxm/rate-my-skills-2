@@ -1,14 +1,29 @@
-import type { ThematicColor, MOMEditableSurfaceElementType } from "./types";
+import type {
+  ThematicColor,
+  MOMEditableSurfaceElementType,
+  MOMElement,
+} from "./types";
 
-export const thematicBlockColors:Record<MOMEditableSurfaceElementType, ThematicColor> = {
-  "heading": {
+export const thematicBlockColors: Record<
+  MOMEditableSurfaceElementType,
+  ThematicColor
+> = {
+  heading: {
     bg: "",
     main: "",
-    accent: ""
+    accent: "",
   },
-  "paragraph": {
+  paragraph: {
     bg: "",
     main: "",
-    accent: ""
-  }
+    accent: "",
+  },
+};
+
+export const parentElementsMap: Partial<Record<MOMElement["type"], MOMElement["type"]>> = {
+  "emphasis": "emphasis",
 }
+export const literalElementsMap: Partial<Record<MOMElement["type"], MOMElement["type"]>> = {
+  "text": "text"
+}
+

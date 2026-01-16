@@ -1,8 +1,8 @@
 .wrapper {
   display: grid;
   height: 100vh;
-  grid-template-areas: "left center right";
-  grid-template-columns: 200px 1fr 200px;
+  grid-template-areas: "left center";
+  grid-template-columns: 200px 1fr;
 
   .left {
     grid-area: left;

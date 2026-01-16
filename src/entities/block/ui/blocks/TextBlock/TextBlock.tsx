@@ -9,5 +9,7 @@ export const TextBlock:BlockComponentProps = ({id}) => {
     return null
   }
 
-  return element.value;
+  return (
+    <span data-id={id} data-type={element.type}>{element.value ?? ""}</span>
+  );
 }

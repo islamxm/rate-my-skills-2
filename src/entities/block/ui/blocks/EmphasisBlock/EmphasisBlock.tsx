@@ -11,7 +11,7 @@ export const EmphasisBlock: BlockComponentProps = ({ id }) => {
   }
 
   return (
-    <span style={{ fontStyle: "italic" }}>
+    <span data-id={id} data-type={element.type} style={{ fontStyle: "italic" }}>
       {element.children.map((childId) => (
         <ElementRenderer id={childId} />
       ))}

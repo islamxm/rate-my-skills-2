@@ -11,7 +11,7 @@ export const ParagraphBlock: BlockComponentProps = ({ id }) => {
   }
 
   return (
-    <p className="editable-block">
+    <p className="editable-block" data-id={id}>
       {element.children.map((childId) => (
         <ElementRenderer id={childId} key={childId} />
       ))}

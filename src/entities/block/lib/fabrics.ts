@@ -19,15 +19,15 @@ export const createRoot = (): MOMRoot => {
 };
 
 //Phrases Content
-export const createText = (value: MOMText["value"]): MOMText => {
+export const createText = (value: MOMText["value"], id?: string): MOMText => {
   return {
-    id: nanoid(),
+    id: id || nanoid(),
     type: "text",
     value,
     // thematicColor: getThematicColor(),
   };
 };
-export const createStrong = (): MOMStrong => {
+export const createStrong = (children: Array<string> = [], id?: string): MOMStrong => {
   return {
     id: nanoid(),
     type: "strong",
@@ -44,11 +44,11 @@ export const createLink = (): MOMLink => {
     // thematicColor: getThematicColor(),
   };
 };
-export const createEmphasis = (): MOMEmphasis => {
+export const createEmphasis = (children: Array<string> = [], id?: string): MOMEmphasis => {
   return {
-    id: nanoid(),
+    id: id || nanoid(),
     type: "emphasis",
-    children: [],
+    children: children,
   };
 };
 

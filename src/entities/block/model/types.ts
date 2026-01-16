@@ -45,6 +45,7 @@ export type MOMBase<MdastElement> = MdastElement & {
   id: string;
   //цветовое отличие конкретного элемента
   thematicColor?: ThematicColor;
+  version?: string;
 };
 
 export type MOMParentBase<ParentType extends MdastParent> = Omit<
@@ -121,3 +122,4 @@ export type MOMEditableSurfaceElementType = keyof Pick<
 export type BlockComponentProps = FC<{
   id: string;
 }>;
+export type MOMBlocksMap = Record<string, MOMElement>;

@@ -1,15 +1,16 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { MOMElement, MOMHeading } from "./types";
-import { nanoid } from "nanoid";
+import type { MOMBlocksMap, MOMElement, MOMHeading } from "./types";
 import { ROOT_ELEMENT_ID } from "../../document";
 import { isRootElement } from "../../document/lib/utils";
+import { getZombieChildIds } from "../lib/utils";
+import { nanoid } from "nanoid";
 
 type InitialState = {
-  blocks: Record<string, MOMElement>;
+  blocks: MOMBlocksMap;
   blockOrders: Array<string>;
-}
+};
 
-const initialState:InitialState = {
+const initialState: InitialState = {
   blocks: {
     "document-root": {
       id: "document-root",
@@ -20,39 +21,62 @@ const initialState:InitialState = {
       id: "test-h1-id",
       type: "heading",
       depth: 1,
-      children: ["test-text-id", "test-emph-id"],
+      // children: ["test-text-id", "test-emph-id", "test-text-end"],
+      children: ["test-text-id", "test-text-end"],
+      version: nanoid(),
     },
     "test-text-id": {
       id: "test-text-id",
       type: "text",
-      value: "Привет, ",
+      value: "Test ",
     },
-    "test-emph-id": {
-      id: "test-emph-id",
-      type: "emphasis",
-      children: ["test-text-id-2"],
-    },
-    "test-text-id-2": {
-      id: "test-text-id-2",
+    "test-text-end": {
+      id: "test-text-end",
       type: "text",
-      value: "мир!",
+      value: "end",
     },
+    // "test-emph-id": {
+    //   id: "test-emph-id",
+    //   type: "emphasis",
+    //   children: ["test-text-id-2"],
+    // },
+    // "test-text-id-2": {
+    //   id: "test-text-id-2",
+    //   type: "text",
+    //   value: "editor",
+    // },
   },
-  blockOrders: []
-}
+  blockOrders: [],
+};
 
 export const blockStore = createSlice({
   name: "blocksStore",
   initialState,
   reducers: {
-    addHeadingElement: (state, {payload}: PayloadAction<MOMHeading>) => {
+    addHeadingElement: (state, { payload }: PayloadAction<MOMHeading>) => {
       const root = state.blocks[ROOT_ELEMENT_ID];
-      if(isRootElement(root)) {
+      if (isRootElement(root)) {
         state.blocks[payload.id] = payload;
         root.children.push(payload.id);
       }
-    }
-  }
-})
+    },
+    updateElement: (state, { payload }: PayloadAction<MOMElement>) => {
+      state.blocks[payload.id] = payload;
+    },
+    updateSurfaceBlock: (state, { payload }: PayloadAction<MOMBlocksMap>) => {
+      // Object.assign(state.blocks, payload);
+      state.blocks = { ...state.blocks, ...payload };
+    },
+    deleteZombieChilds: (state) => {
+      const zombies = getZombieChildIds(state.blocks, ROOT_ELEMENT_ID);
+      zombies.forEach((zombieId) => delete state.blocks[zombieId]);
+    },
+    deleteSurfaceBlock: (state, { payload }: PayloadAction<string>) => {
+      if (state.blocks[payload]) {
+        delete state.blocks[payload];
+      }
+    },
+  },
+});
 
 export const blockStoreActions = blockStore.actions;
