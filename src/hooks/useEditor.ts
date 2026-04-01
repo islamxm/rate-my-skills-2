@@ -20,7 +20,7 @@ export function useEditor<T extends HTMLElement>(
   nodeId: string,
   children: Array<MOMAllContent>,
   parseType: ParseType = "deep",
-  disableFormatting?: boolean
+  disableFormatting?: boolean,
 ) {
   const node = useNode(nodeId);
   const {
@@ -33,7 +33,7 @@ export function useEditor<T extends HTMLElement>(
     focusNewNode,
     blur,
   } = useSelection();
-  const { commitInlineEdit, updateNode, removeNode, insertNode } =
+  const { commitInlineEdit, updateNode, removeNode, insertNode, getNode } =
     useDocument();
   const { undo } = useHistory();
   const ref = useRef<T | null>(null);
@@ -50,7 +50,7 @@ export function useEditor<T extends HTMLElement>(
     if (parseType === "deep") {
       html = MOM.Serializer.momToHTML(children, nodeId);
     }
-    if(parseType === "plain") {
+    if (parseType === "plain") {
       html = ref.current.textContent;
     }
     ref.current.innerHTML = html;
@@ -66,7 +66,6 @@ export function useEditor<T extends HTMLElement>(
   useEffect(() => {
     if (!ref.current) return;
     if (selected) {
-      console.log("focus" in ref.current);
       ref.current.focus();
     }
   }, [selected]);
@@ -145,7 +144,7 @@ export function useEditor<T extends HTMLElement>(
     if (e.code === "Tab") {
       e.preventDefault();
       // onSave();
-      onBlur()
+      onBlur();
       nextBlock();
       return;
     }

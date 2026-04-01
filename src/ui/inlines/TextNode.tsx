@@ -7,7 +7,7 @@ type Props = { nodeId: string };
 export const TextNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
   const isValidNode = MOM.Guard.isTextNode(node);
-
+  
   if (!isValidNode) return null;
 
   const {italic, bold, lineThrough, link} = node.marks;

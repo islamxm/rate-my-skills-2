@@ -168,6 +168,7 @@ export function updateNode(opt: {
   if (!node) {
     throw new Error("Указанная нода не найдена");
   }
+
   if (patch.type !== undefined && node.type !== patch.type) {
     throw new Error(
       "Нельзя менять тип через updateNode, используйте convertNode",
@@ -178,7 +179,11 @@ export function updateNode(opt: {
   ) as Partial<MOMAllContent>;
 
   const newDoc = produce(doc, (draft) => {
-    Object.assign(draft.nodes[nodeId], patch);
+    //какой то бред поэтому пока не разберемся оставим так
+    // JSON.stringify(draft.nodes[nodeId])
+    // Object.assign(draft.nodes[nodeId], patch);
+    // @ts-ignore
+    draft.nodes[nodeId] = { ...draft.nodes[nodeId], ...patch };
   });
 
   const op: UpdateOp = {

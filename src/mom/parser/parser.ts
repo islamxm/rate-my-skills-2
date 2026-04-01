@@ -43,12 +43,13 @@ export function domToMom(
 function parseSpanToMOM(element: HTMLElement, parentId: string | null) {
   const id = momDataOfElement(element).id || nanoid();
   const value = element.textContent || "";
-  const url = element.getAttribute("href");
+  const url = element.getAttribute("data-url");
 
   const marks: MOMText["marks"] = {
     bold: element.dataset.bold === "true",
     italic: element.dataset.italic === "true",
     lineThrough: element.dataset.linethrough === "true",
+    link: element.dataset.link === "true",
   };
 
   if (url) {

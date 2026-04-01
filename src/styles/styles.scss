@@ -34,22 +34,25 @@ button {
   outline: 4px solid rgba(blue, 0.3);
 }
 
-[data-italic="true"] {
+span[data-italic="true"] {
   font-style: italic;
 }
-[data-bold="true"] {
+span[data-bold="true"] {
   font-weight: bold;
 }
-[data-linethrough="true"] {
+span[data-linethrough="true"] {
   text-decoration: line-through;
+}
+span[data-link] {
+  color: #0969da;
+}
+span[data-url]:hover {
+  text-decoration: underline;
+  text-decoration-style: dashed;
 }
 
 p[data-type="paragraph"] {
   min-height: 1.6em;
-  // margin: 0 !important;
-}
-[data-type="heading"] {
-  // margin: 0 !important;
 }
 h1[data-type="heading"] {
   min-height: 2em;
@@ -71,5 +74,4 @@ h6[data-type="heading"] {
 }
 [data-type="blockquote"] {
   min-height: 1.6em;
-  // margin: 0 !important;
 }

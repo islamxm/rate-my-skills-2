@@ -62,7 +62,6 @@ export const EditorToolbar = () => {
     focusNewNode(node.id);
   };
 
-  // делаем это, тут не сложно должно быть на самом деле
   const addCode = () => {
     insertNode({
       node: MOM.Engine.createCode(),
@@ -105,7 +104,7 @@ export const EditorToolbar = () => {
             P
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={"right"}>Create paragraph block</TooltipContent>
+        <TooltipContent side={"right"}>Create Paragraph</TooltipContent>
       </Tooltip>
       <DropdownMenu>
         <DropdownMenuTrigger>
@@ -140,7 +139,7 @@ export const EditorToolbar = () => {
             <Quote />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={"right"}>Create blockquote</TooltipContent>
+        <TooltipContent side={"right"}>Create Quote</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger>
@@ -148,7 +147,7 @@ export const EditorToolbar = () => {
             <Code2 />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={"right"}>Create code block</TooltipContent>
+        <TooltipContent side={"right"}>Create Code</TooltipContent>
       </Tooltip>
       {/* <DropdownMenu>
         <DropdownMenuTrigger>
@@ -165,7 +164,6 @@ export const EditorToolbar = () => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu> */}
-
       {/* <Tooltip>
         <TooltipTrigger>
           <Button variant={"secondary"} size={"icon"} onClick={addImage}>

@@ -156,6 +156,7 @@ function buildNodes(opt: {
 }): Map<string, MOMText[]> {
   // возвращаем Map<spanId, новые ноды>
   const { fragments, format, parentId, existingNodes } = opt;
+
   const result = new Map<string, MOMText[]>();
 
   for (const fragment of fragments) {
@@ -190,7 +191,6 @@ function buildNodes(opt: {
 
     result.set(fragment.spanId, parts);
   }
-
   return result;
 }
 
@@ -208,7 +208,6 @@ function modifiedBlock(opt: {
       result.push(node);
     }
   }
-
   return result;
 }
 

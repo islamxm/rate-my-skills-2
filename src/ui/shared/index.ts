@@ -59,3 +59,26 @@ export {
   SelectValue,
 } from "./select";
 export { Toaster } from "./sonner";
+export { Input } from "./input";
+export {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupText,
+  InputGroupInput,
+  InputGroupTextarea,
+} from "./input-group";
+export { Textarea } from "./textarea";
+export { Label } from "./label";
+export {
+  Field,
+  FieldLabel,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+  FieldContent,
+  FieldTitle,
+} from "./field";

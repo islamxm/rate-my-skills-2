@@ -71,13 +71,13 @@ export const TopToolbar = () => {
                   <MenubarItem>
                     <FilePlus /> New
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <Save /> Save
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <LayoutTemplate /> Save as template
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <Settings /> Settings
                   </MenubarItem>
                   <MenubarSeparator />
@@ -100,13 +100,13 @@ export const TopToolbar = () => {
                     <SquareStack /> {blockHighlighting ? "Disable" : "Enable"} block highlighting
                   </MenubarItem>
                   <MenubarSeparator />
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <BrushCleaning /> Clear all
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <Group /> Group all
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <Ungroup /> Ungroup all
                   </MenubarItem>
                 </MenubarContent>
@@ -114,10 +114,10 @@ export const TopToolbar = () => {
               <MenubarMenu>
                 <MenubarTrigger>Export</MenubarTrigger>
                 <MenubarContent>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <FileJson /> JSON
                   </MenubarItem>
-                  <MenubarItem>
+                  <MenubarItem disabled>
                     <File /> Markdown
                   </MenubarItem>
                 </MenubarContent>
@@ -129,7 +129,7 @@ export const TopToolbar = () => {
                     <BookMarked /> Instructions
                   </MenubarItem>
                   <MenubarItem>
-                    <Keyboard /> Shotcuts
+                    <Keyboard /> Shortcuts
                   </MenubarItem>
                   <MenubarItem>
                     <HelpCircle /> About

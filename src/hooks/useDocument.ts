@@ -69,6 +69,10 @@ export function useDocument() {
     dispatch(documentStoreActions.commitInlineEdit(opt));
   }
 
+  function getNode(nodeId: string) {
+    return nodes[nodeId];
+  }
+
   return {
     doc,
     nodes,
@@ -80,6 +84,7 @@ export function useDocument() {
     removeNode,
     updateNode,
     moveNode,
+    getNode,
 
     groupNodes,
     ungroupNodes,

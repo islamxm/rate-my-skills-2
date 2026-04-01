@@ -28,7 +28,7 @@ export type MOMTextMarks = {
   italic?: boolean;
   bold?: boolean;
   lineThrough?: boolean;
-  link?: boolean
+  link?: boolean;
 };
 export interface MOMBlockquote extends MOMAbstractParent {
   type: "blockquote";

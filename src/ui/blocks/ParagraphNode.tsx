@@ -21,13 +21,13 @@ export const ParagraphNode: FC<Props> = ({ nodeId }) => {
         containerRef={ref as any}
         applyFormat={applyFormat}
       />
+      
       <p
         ref={ref}
         {...editorProps}
         data-id={nodeId}
         data-type={node.type}
         data-parent-id={node.parentId ?? ""}
-        // className="block-node border border-dashed border-sky-400"
       />
     </>
   );

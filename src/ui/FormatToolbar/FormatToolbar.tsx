@@ -1,6 +1,12 @@
-import { useEffect, useState, type FC, type RefObject } from "react";
-import { Bold, Italic, Strikethrough } from "lucide-react";
-import { Button, Toggle } from "@/ui/shared";
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type FC,
+  type RefObject,
+} from "react";
+import { Bold, Italic, Link, Strikethrough } from "lucide-react";
+import { Button } from "@/ui/shared";
 import type { MOMTextMarks } from "@/mom/types";
 import { useFloating, offset, flip, shift, inline } from "@floating-ui/react";
 import { MOM } from "@/mom";
@@ -10,7 +16,7 @@ type Props = {
   applyFormat: (format: keyof MOMTextMarks) => void;
   save?: any;
 };
-
+/** сейчас этот контейнер для каждого блока свой, надо вынести на уровень Canvas */
 export const FormatToolbar: FC<Props> = ({
   containerRef,
   applyFormat,
@@ -21,6 +27,8 @@ export const FormatToolbar: FC<Props> = ({
     placement: "top",
     middleware: [inline(), offset(8), flip(), shift({ padding: 8 })],
   });
+  const [isLink, setIsLink] = useState(false);
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -70,18 +78,26 @@ export const FormatToolbar: FC<Props> = ({
     setVisible(false);
   };
 
+  const toggleLink = () => {
+    setIsLink((s) => !s);
+  };
+
+  const onUrlChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setUrl(e.target.value);
+  };
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{duration: 0.1}}
+          transition={{ duration: 0.1 }}
           exit={{ opacity: 0 }}
           ref={refs?.setFloating}
           style={floatingStyles}
           className={
-            "flex items-center rounded-lg border bg-background shadow-md"
+            "flex items-center rounded-lg border bg-background shadow-md p-[3px] overflow-hidden"
           }
           onMouseDown={(e) => e.preventDefault()}
         >
@@ -105,6 +121,13 @@ export const FormatToolbar: FC<Props> = ({
             onMouseDown={(e) => onApply(e, "lineThrough")}
           >
             <Strikethrough />
+          </Button>
+          <Button
+            size={"icon"}
+            variant={"outline"}
+            onMouseDown={(e) => onApply(e, "link")}
+          >
+            <Link />
           </Button>
         </motion.div>
       )}
