@@ -149,21 +149,22 @@ export const EditorToolbar = () => {
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create Code</TooltipContent>
       </Tooltip>
-      {/* <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button variant={"secondary"} size={"icon"}>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button variant={"secondary"} size={"icon"} onClick={() => addList(true)}>
+            <ListOrdered />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create Ordered List</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button variant={"secondary"} size={"icon"} onClick={() => addList()}>
             <List />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side={"right"}>
-          <DropdownMenuItem onClick={() => addList()}>
-            <List /> Unordered list
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addList(true)}>
-            <ListOrdered /> Ordered list
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu> */}
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create Unordered List</TooltipContent>
+      </Tooltip>
       {/* <Tooltip>
         <TooltipTrigger>
           <Button variant={"secondary"} size={"icon"} onClick={addImage}>

@@ -21,11 +21,17 @@ export const LinkTooltip: FC<Props> = ({ containerRef, addUrl }) => {
   const stateRef = useRef<{ url: string } | null>(state);
 
   // тут работаем только с рефами опять так и из за проблемы stale closure
-  function onSave() {
+  const onSave = () => {
     if (!spanRef.current || !stateRef.current) return;
     const id = spanRef.current.dataset.id as string;
     addUrl?.({ url: stateRef.current.url || "", linkId: id });
-  }
+  };
+
+  const close = () => {
+    setState(null);
+    stateRef.current = null;
+    spanRef.current = null;
+  };
 
   // основная логика тоггла тултипа
   useEffect(() => {
@@ -50,7 +56,7 @@ export const LinkTooltip: FC<Props> = ({ containerRef, addUrl }) => {
       const to = e.relatedTarget as Node | null;
       if (refs.floating.current?.contains(to)) return;
       onSave();
-      setState(null);
+      close();
     };
 
     container.addEventListener("mouseover", handleMouseOver);
@@ -69,7 +75,7 @@ export const LinkTooltip: FC<Props> = ({ containerRef, addUrl }) => {
     const handleMouseDown = (e: MouseEvent) => {
       const target = e.target as Node;
       if (refs.floating.current?.contains(target)) return;
-      setState(null);
+      close();
     };
 
     document.addEventListener("mousedown", handleMouseDown);
@@ -87,7 +93,7 @@ export const LinkTooltip: FC<Props> = ({ containerRef, addUrl }) => {
     if (e.code === "Enter") {
       e.preventDefault();
       onSave();
-      setState(null);
+      close();
     }
   };
 

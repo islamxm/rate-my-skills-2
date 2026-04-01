@@ -20,7 +20,7 @@ function momNodeToHTML(node: MOMAllContent, parentId: string | null) {
     node.marks?.italic ? `data-italic="true"` : "",
     node.marks?.lineThrough ? `data-linethrough="true"` : "",
     node.marks?.link ? `data-link="true"` : "",
-    node.url ? `data-url=${node.url}` : "",
+    (node.url && node.marks?.link) ? `data-url=${node.url}` : "",
   ]
     .filter(Boolean)
     .join(" ");

@@ -50,7 +50,6 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
   const deleteItem = (id: string, index: number) => {
     if (children.length === 1) {
       removeNode(nodeId);
-
       return;
     }
 

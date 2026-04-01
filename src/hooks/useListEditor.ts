@@ -18,7 +18,7 @@ export function useListEditor(
   const parentChildren = useChildren(listNodeId);
   const cursorRef = useRef<any>(null);
   const { commitInlineEdit } = useDocument();
-  const { clearAll, isFocused } = useSelection();
+  const { isFocused } = useSelection();
   const ref = useRef<HTMLLIElement>(null);
   const focused = isFocused(nodeId);
 

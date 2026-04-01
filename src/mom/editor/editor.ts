@@ -1,9 +1,5 @@
 import { MOM } from "..";
-import type {
-  MOMAllContent,
-  MOMText,
-  MOMTextMarks,
-} from "../types";
+import type { MOMAllContent, MOMText, MOMTextMarks } from "../types";
 import type { CursorPosition, SelectionFragment } from "./editor.types";
 
 /** изменение стиля у текстовых нод */
@@ -154,7 +150,6 @@ function buildNodes(opt: {
   parentId: string;
   existingNodes: MOMText[];
 }): Map<string, MOMText[]> {
-  // возвращаем Map<spanId, новые ноды>
   const { fragments, format, parentId, existingNodes } = opt;
 
   const result = new Map<string, MOMText[]>();
@@ -171,6 +166,7 @@ function buildNodes(opt: {
 
     if (fragment.beforeText) {
       parts.push({
+        ...existingNode,
         ...MOM.Engine.createText(fragment.beforeText, parentId),
         id: fragment.spanId,
         marks: existingMarks,
@@ -178,12 +174,14 @@ function buildNodes(opt: {
     }
     if (fragment.selectedText) {
       parts.push({
+        ...existingNode,
         ...MOM.Engine.createText(fragment.selectedText, parentId),
         marks: newMarks,
       });
     }
     if (fragment.afterText) {
       parts.push({
+        ...existingNode,
         ...MOM.Engine.createText(fragment.afterText, parentId),
         marks: existingMarks,
       });
@@ -354,7 +352,7 @@ export function getCssClassByNode(node: MOMAllContent) {
   if (node.type === "blockquote") {
     return "blockquote";
   }
-  return ""
+  return "";
 }
 
 export const Editor = {
