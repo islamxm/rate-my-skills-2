@@ -1,5 +1,6 @@
 import { nanoid } from "nanoid";
 import type {
+  MOMAlert,
   MOMBlockNodeType,
   MOMBlockquote,
   MOMCode,
@@ -92,6 +93,18 @@ export function createBlockquote(
   };
 }
 
+export function createAlert(
+  parentId: string | null = null,
+  variant: MOMAlert["variant"] = "important",
+): MOMAlert {
+  return {
+    ...base(parentId),
+    type: "alert",
+    variant,
+    children: [],
+  };
+}
+
 export function createThematicBreak(
   parentId: string | null = null,
 ): MOMThematicBreak {
@@ -157,6 +170,10 @@ export function create<T extends keyof MOMCreateParams>(
     case "blockquote":
       return createBlockquote(
         (params as MOMCreateParams["blockquote"]).parentId,
+      ) as MOMCreateResult[T];
+    case "alert":
+      return createAlert(
+        (params as MOMCreateParams["alert"]).parentId,
       ) as MOMCreateResult[T];
     case "thematicBreak":
       return createThematicBreak(

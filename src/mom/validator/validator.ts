@@ -6,6 +6,7 @@ import type { ValidationError, ValidationResult } from "./validator.types";
 export const ALLOWED_CHILDREN: Record<MOMNodeType, Array<MOMNodeType>> = {
   root: [
     "blockquote",
+    "alert",
     "list",
     "listItem",
     "text",
@@ -17,6 +18,7 @@ export const ALLOWED_CHILDREN: Record<MOMNodeType, Array<MOMNodeType>> = {
     "image",
   ],
   blockquote: ["text"],
+  alert: ["text"],
   list: ["listItem"],
   listItem: ["text"],
   paragraph: ["text"],

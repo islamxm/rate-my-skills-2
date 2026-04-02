@@ -33,6 +33,10 @@ export type MOMTextMarks = {
 export interface MOMBlockquote extends MOMAbstractParent {
   type: "blockquote";
 }
+export interface MOMAlert extends MOMAbstractParent {
+  type: "alert";
+  variant: "warning" | "tip" | "note" | "caution" | "important"
+}
 export interface MOMCode extends MOMAbstractLiteral {
   type: "code";
   lang?: string;
@@ -86,6 +90,7 @@ export type MOMParentNode =
 
 export type MOMAllContent =
   | MOMBlockquote
+  | MOMAlert
   | MOMCode
   | MOMHeading
   | MOMImage
@@ -99,6 +104,7 @@ export type MOMAllContent =
   | MOMListItemGfm;
 
 export type MOMBlockNode =
+  | MOMAlert
   | MOMParagraph
   | MOMBlockquote
   | MOMHeading

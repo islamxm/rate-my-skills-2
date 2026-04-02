@@ -1,4 +1,5 @@
 import type {
+  MOMAlert,
   MOMAllContent,
   MOMBlockquote,
   MOMCode,
@@ -193,6 +194,7 @@ export type MOMCreateParams = {
   list: { ordered?: boolean; parentId?: string | null };
   listItem: { parentId: string };
   blockquote: { parentId?: string | null };
+  alert: {parentId: string | null},
   thematicBreak: { parentId?: string | null };
   text: { value?: string; parentId?: string | null };
   inlineCode: { value?: string; parentId?: string | null };
@@ -206,6 +208,7 @@ export type MOMCreateResult = {
   list: MOMList;
   listItem: MOMListItem;
   blockquote: MOMBlockquote;
+  alert: MOMAlert,
   thematicBreak: MOMThematicBreak;
   text: MOMText;
   inlineCode: MOMInlineCode;

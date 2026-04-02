@@ -189,6 +189,11 @@ export function useEditor<T extends HTMLElement>(
           parentId: null,
         });
         break;
+      case "alert":
+        insertNode({
+          node: { ...MOM.Engine.createAlert(node.parentId, node.variant), id },
+          parentId: null,
+        });
     }
     // selectOne(id);
     // focuseNode(id);

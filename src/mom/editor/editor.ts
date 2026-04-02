@@ -1,7 +1,8 @@
 import { MOM } from "..";
-import type { MOMAllContent, MOMText, MOMTextMarks } from "../types";
+import type { MOMAlert, MOMAllContent, MOMText, MOMTextMarks } from "../types";
 import type { CursorPosition, SelectionFragment } from "./editor.types";
 
+// есть проблема с обьединением одинаковых нод, из за этого при хаотичном форматировании появлюятся много фрагментов одного и того же
 /** изменение стиля у текстовых нод */
 export function applyFormat(
   format: keyof MOMTextMarks,
@@ -170,6 +171,7 @@ function buildNodes(opt: {
         ...MOM.Engine.createText(fragment.beforeText, parentId),
         id: fragment.spanId,
         marks: existingMarks,
+        url: existingMarks.link ? existingNode?.url : undefined,
       });
     }
     if (fragment.selectedText) {
@@ -177,6 +179,7 @@ function buildNodes(opt: {
         ...existingNode,
         ...MOM.Engine.createText(fragment.selectedText, parentId),
         marks: newMarks,
+        url: existingMarks.link ? existingNode?.url : undefined,
       });
     }
     if (fragment.afterText) {
@@ -184,6 +187,7 @@ function buildNodes(opt: {
         ...existingNode,
         ...MOM.Engine.createText(fragment.afterText, parentId),
         marks: existingMarks,
+        url: existingMarks.link ? existingNode?.url : undefined,
       });
     }
 
@@ -342,6 +346,14 @@ export function restoreCursor(
   selection.addRange(range);
 }
 
+const alertVariantGfmCssClasses: Record<MOMAlert["variant"], string> = {
+  caution: "markdown-alert-caution",
+  tip: "markdown-alert-tip",
+  important: "markdown-alert-important",
+  warning: "markdown-alert-warning",
+  note: "markdown-alert-note",
+};
+
 export function getCssClassByNode(node: MOMAllContent) {
   if (node.type === "paragraph") {
     return "p";
@@ -351,6 +363,27 @@ export function getCssClassByNode(node: MOMAllContent) {
   }
   if (node.type === "blockquote") {
     return "blockquote";
+  }
+  if (node.type === "alert" && node.variant === "caution") {
+    return `markdown-alert-wrapper markdown-alert-caution`;
+  }
+  if (node.type === "alert" && node.variant === "important") {
+    return `markdown-alert-wrapper markdown-alert-important`;
+  }
+  if (node.type === "alert" && node.variant === "note") {
+    return `markdown-alert-wrapper markdown-alert-note`;
+  }
+  if (node.type === "alert" && node.variant === "tip") {
+    return `markdown-alert-wrapper markdown-alert-tip`;
+  }
+  if (node.type === "alert" && node.variant === "warning") {
+    return `markdown-alert-wrapper markdown-alert-warning`;
+  }
+  if (node.type === "list" && node.ordered) {
+    return "ol";
+  }
+  if (node.type === "list") {
+    return "ul";
   }
   return "";
 }

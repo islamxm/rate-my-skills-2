@@ -7,6 +7,7 @@ import {
   HeadingNode,
   CodeNode,
 } from "./blocks";
+import { AlertNode } from "./blocks/AlertNode";
 import { BlockquoteNode } from "./blocks/BlockquoteNode";
 import { ListItemNode, TextNode } from "./inlines";
 
@@ -32,6 +33,8 @@ function renderBlock(node: MOMBlockNode) {
       return <ListNode nodeId={node.id} />;
     case "blockquote":
       return <BlockquoteNode nodeId={node.id} />;
+    case "alert":
+      return <AlertNode nodeId={node.id} />;
     case "code":
       return <CodeNode nodeId={node.id} />;
     case "image":

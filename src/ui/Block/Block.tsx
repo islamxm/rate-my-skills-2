@@ -1,4 +1,4 @@
-import classes from './classes.module.scss';
+import classes from "./classes.module.scss";
 import type { FC } from "react";
 import { useDocument, useNode, useSelection } from "../../hooks";
 import { renderer } from "../renderer";
@@ -27,7 +27,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { MOM } from "@/mom";
-import { useUI } from "@/hooks/useUi";
+import { useUI } from "@/hooks";
 
 type Props = {
   nodeId: string;
@@ -37,8 +37,8 @@ type Props = {
 export const Block: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
   const { isSelected, selectOne, addToSelect, selectAll } = useSelection();
-  const { removeNode,  } = useDocument();
-  const {blockHighlighting} = useUI();
+  const { removeNode } = useDocument();
+  const { blockHighlighting } = useUI();
   const selected = isSelected(nodeId);
 
   if (!node) return null;
@@ -52,8 +52,8 @@ export const Block: FC<Props> = ({ nodeId }) => {
       selectOne(nodeId);
     }
   };
-  
-  const typeCssClass = MOM.Editor.getCssClassByNode(node)
+
+  const typeCssClass = MOM.Editor.getCssClassByNode(node);
 
   return (
     <ContextMenu>
@@ -68,15 +68,21 @@ export const Block: FC<Props> = ({ nodeId }) => {
           <div
             onClick={select}
             className={clsx(
-              `rounded-sm border border-solid overflow-hidden w-full outline-[4px]`,
-              !blockHighlighting && classes.highlight_disabled
+              // `rounded-sm border border-solid overflow-hidden w-full outline-[4px]`,
+              // пока так чтобы ul,ol маркеры отображались
+              `rounded-sm border border-solid w-full outline-[4px]`,
+              !blockHighlighting && classes.highlight_disabled,
             )}
-            style={blockHighlighting ? {
-              backgroundColor: bg,
-              borderColor: text,
-              borderStyle: "solid",
-              outlineColor: selected ? border : "transparent",
-            } : {outline: `1px dashed ${text}`, border: "none"}}
+            style={
+              blockHighlighting
+                ? {
+                    backgroundColor: bg,
+                    borderColor: text,
+                    borderStyle: "solid",
+                    outlineColor: selected ? border : "transparent",
+                  }
+                : { outline: `1px dashed ${text}`, border: "none" }
+            }
           >
             {renderer(node)}
           </div>

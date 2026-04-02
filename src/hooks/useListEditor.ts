@@ -33,7 +33,6 @@ export function useListEditor(
     if (!ref.current) return;
     const html = MOM.Serializer.momToHTML(children, nodeId);
     ref.current.innerHTML = html;
-    // restoreCursor(ref.current, cursorRef.current);
   }, [children]);
 
   const save = () => {

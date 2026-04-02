@@ -413,9 +413,6 @@
   color: #59636e;
 }
 
-.markdown-body p {
-}
-
 .markdown-body .p {
   margin-top: 0;
 
@@ -432,10 +429,6 @@
 
 .markdown-body .blockquote {
   margin: 0;
-}
-
-.markdown-body ul,
-.markdown-body ol {
 }
 
 .markdown-body .ul,
@@ -457,9 +450,6 @@
 .markdown-body ol ul ol,
 .markdown-body ol ol ol {
   list-style-type: lower-alpha;
-}
-
-.markdown-body dd {
 }
 
 .markdown-body .dd {
@@ -567,16 +557,6 @@
 
 .markdown-body .anchor:focus {
   outline: none;
-}
-
-.markdown-body p,
-.markdown-body blockquote,
-.markdown-body ul,
-.markdown-body ol,
-.markdown-body dl,
-.markdown-body table,
-.markdown-body pre,
-.markdown-body details {
 }
 
 .markdown-body .p,
@@ -721,9 +701,6 @@
   margin-top: 0.25em;
 }
 
-.markdown-body dl {
-}
-
 .markdown-body .dl {
   padding: 0;
 }
@@ -741,9 +718,6 @@
   padding: 0;
 
   margin-top: 1rem;
-}
-
-.markdown-body dl dd {
 }
 
 .markdown-body .dl dd,
@@ -1337,22 +1311,31 @@
   filter: invert(50%);
 }
 
+.markdown-body .markdown-alert-wrapper {
+  margin-bottom: 1rem;
+}
+.markdown-body .markdown-alert-wrapper > :first-child {
+  margin-top: 0;
+}
+
+.markdown-body .markdown-alert-wrapper > :last-child {
+  margin-bottom: 0;
+}
+
 .markdown-body .markdown-alert {
   padding: 0.5rem 1rem;
-
-  margin-bottom: 1rem;
 
   color: inherit;
 
   border-left: 0.25em solid #d1d9e0;
-}
 
-.markdown-body .markdown-alert > :first-child {
-  margin-top: 0;
-}
+  .markdown-alert-icon {
+    margin-right: 6px;
+  }
 
-.markdown-body .markdown-alert > :last-child {
-  margin-bottom: 0;
+  .markdown-alert-title {
+    padding-bottom: 1rem;
+  }
 }
 
 .markdown-body .markdown-alert .markdown-alert-title {

@@ -4,7 +4,6 @@ import type {
   MOMBlockNodeType,
   MOMInlineNode,
   MOMInlineNodeType,
-  MOMNodeType,
   MOMParentNode,
 } from "../types";
 
@@ -30,6 +29,7 @@ export const MOM_TYPE = {
     "image",
     "list",
     "blockquote",
+    "alert",
     "thematicBreak",
   ] as Array<MOMBlockNodeType>,
   inline: [
@@ -77,6 +77,9 @@ export function isListNode(node: MOMAllContent) {
 export function isBlockquoteNode(node: MOMAllContent) {
   return node.type === "blockquote";
 }
+export function isAlertNode(node: MOMAllContent) {
+  return node.type === "alert";
+}
 export function isThematicBreak(node: MOMAllContent) {
   return node.type === "thematicBreak";
 }
@@ -102,6 +105,7 @@ export const Guard = {
   isImageNode,
   isListNode,
   isBlockquoteNode,
+  isAlertNode,
   isThematicBreak,
   isCodeNode,
   isValidHtmlElement

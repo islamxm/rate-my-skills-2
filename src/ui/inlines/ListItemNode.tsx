@@ -45,7 +45,7 @@ export const ListItemNode: FC<Props> = ({
         data-id={node.id}
         data-type={node.type}
         data-parent-id={node.parentId ?? ""}
-        className="border border-dashed border-sky-400"
+        // className="border border-dashed border-sky-400"
       />
     </>
   );

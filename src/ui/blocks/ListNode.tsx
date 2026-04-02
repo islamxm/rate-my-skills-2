@@ -64,7 +64,7 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
       data-id={node.id}
       data-type={node.type}
       data-parent-id={node.parentId ?? ""}
-      className="block-node"
+      // className="block-node"
     >
       {children.map((childNode, childIndex) => (
         <ListItemNode
