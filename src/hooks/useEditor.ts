@@ -271,6 +271,7 @@ export function useEditor<T extends HTMLElement>(
     onPaste,
     onInput,
     onFocus,
+    tabIndex: -1
   };
 
   return {

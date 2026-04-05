@@ -7,6 +7,9 @@ import type { MOMAllContent, MOMTextMarks } from "../mom/types";
 import { useChildren } from "./useChildren";
 import { useCursor } from "./useCursor";
 import { useHistory } from "./useHistory";
+import { useDocumentActions } from "./useDocumentActions";
+import { useNodeSelection } from "./useNodeSelection";
+import { useSelectionActions } from "./useSelectionActions";
 
 export function useListEditor(
   nodeId: string,
@@ -18,18 +21,20 @@ export function useListEditor(
   focusItem?: any,
 ) {
   const parentChildren = useChildren(listNodeId);
-  const { commitInlineEdit } = useDocument();
-  const { isFocused, focuseNode, prevBlock } = useSelection();
+  // const listNode = useNode(listNodeId);
+  const { commitInlineEdit } = useDocumentActions();
+  // const { isFocused, focuseNode, prevBlock } = useSelection();
+  const { focuseNode, selectPrevBlock } = useSelectionActions();
+  const { isFocused } = useNodeSelection(listNodeId);
   const { undo, redo } = useHistory();
   const ref = useRef<HTMLLIElement>(null);
   const { saveCursor, restoreCursor } = useCursor<HTMLLIElement>(ref);
-  const focused = isFocused(nodeId);
 
   useEffect(() => {
-    if (focused && ref.current) {
+    if (isFocused && ref.current) {
       // ref.current.focus();
     }
-  }, [focused]);
+  }, [isFocused]);
 
   /** берем управление DOM в свои руки чтобы не было ошибки c [React]removeChildren() */
   useEffect(() => {
@@ -143,7 +148,7 @@ export function useListEditor(
       if (isEmpty) {
         deleteItem();
         if (isLastItem) {
-          prevBlock();
+          selectPrevBlock(listNodeId);
         }
       }
     }
@@ -162,6 +167,7 @@ export function useListEditor(
     onKeyDown,
     onInput,
     onClick: onSelectBlock,
+    tabIndex: -1
   };
 
   return {

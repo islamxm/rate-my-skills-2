@@ -576,6 +576,10 @@
   margin-bottom: 1rem;
 }
 
+.markdown-body .ul li {
+  list-style: disc;
+}
+
 .markdown-body blockquote > :first-child {
   margin-top: 0;
 }
