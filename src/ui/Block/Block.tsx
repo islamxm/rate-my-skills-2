@@ -58,9 +58,9 @@ export const Block: FC<Props> = ({ nodeId }) => {
       <ContextMenuTrigger>
         <motion.div
           key={nodeId}
-          layout={"position"}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          // layout={"position"}
+          // initial={{ opacity: 0 }}
+          // animate={{ opacity: 1 }}
           className={clsx(typeCssClass, classes.wrapper)}
         >
           <div
