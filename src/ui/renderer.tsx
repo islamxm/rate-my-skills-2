@@ -1,5 +1,5 @@
 import { MOM } from "../mom";
-import type { MOMAllContent, MOMBlockNode, MOMInlineNode } from "../mom/types";
+import type { MOMAllContent, MOMBlockNode } from "../mom/types";
 import {
   ListNode,
   ThematicBreakNode,
@@ -10,16 +10,16 @@ import {
 } from "./blocks";
 import { AlertNode } from "./blocks/AlertNode";
 import { BlockquoteNode } from "./blocks/BlockquoteNode";
-import { ListItemNode, TextNode } from "./inlines";
+import { HtmlNode } from "./blocks/HtmlNode";
 
 /** Основная функци рендерер */
 export function renderer(node: MOMAllContent) {
   if (MOM.Guard.isBlockNode(node)) {
     return renderBlock(node);
   }
-  if (MOM.Guard.isInlineNode(node)) {
-    return renderInline(node);
-  }
+  // if (MOM.Guard.isInlineNode(node)) {
+  //   return renderInline(node);
+  // }
   return null;
 }
 
@@ -40,6 +40,8 @@ function renderBlock(node: MOMBlockNode) {
       return <CodeNode nodeId={node.id} />;
     case "image":
       return <ImageNode nodeId={node.id} />;
+    case "html":
+      return <HtmlNode nodeId={node.id} />;
     case "thematicBreak":
       return <ThematicBreakNode nodeId={node.id} />;
     default:
@@ -47,18 +49,18 @@ function renderBlock(node: MOMBlockNode) {
   }
 }
 
-/** Функция для рендера составных частей топ-левел блоков */
-function renderInline(node: MOMInlineNode) {
-  switch (node.type) {
-    case "listItem":
-      return <ListItemNode nodeId={node.id} />;
-    case "paragraph":
-      return <ParagraphNode nodeId={node.id} />;
-    case "text":
-      return <TextNode nodeId={node.id} />;
-    case "inlineCode":
-      return null;
-    default:
-      return null;
-  }
-}
+// /** Функция для рендера составных частей топ-левел блоков */
+// function renderInline(node: MOMInlineNode) {
+//   switch (node.type) {
+//     case "listItem":
+//       return <ListItemNode nodeId={node.id} />;
+//     case "paragraph":
+//       return <ParagraphNode nodeId={node.id} />;
+//     case "text":
+//       return <TextNode nodeId={node.id} />;
+//     case "inlineCode":
+//       return null;
+//     default:
+//       return null;
+//   }
+// }

@@ -35,7 +35,7 @@ export interface MOMBlockquote extends MOMAbstractParent {
 }
 export interface MOMAlert extends MOMAbstractParent {
   type: "alert";
-  variant: "warning" | "tip" | "note" | "caution" | "important"
+  variant: "warning" | "tip" | "note" | "caution" | "important";
 }
 export interface MOMCode extends MOMAbstractLiteral {
   type: "code";
@@ -82,6 +82,9 @@ export interface MOMThematicBreak extends MOMNode {
 export interface MOMListItemGfm extends MOMListItem {
   checked?: boolean;
 }
+export interface MOMHtml extends MOMAbstractLiteral {
+  type: "html";
+}
 
 export type MOMParentNode =
   | MOMBlockquote
@@ -102,7 +105,8 @@ export type MOMAllContent =
   | MOMRoot
   | MOMText
   | MOMThematicBreak
-  | MOMListItemGfm;
+  | MOMListItemGfm
+  | MOMHtml;
 
 export type MOMBlockNode =
   | MOMAlert
@@ -112,7 +116,8 @@ export type MOMBlockNode =
   | MOMList
   | MOMImage
   | MOMThematicBreak
-  | MOMCode;
+  | MOMCode
+  | MOMHtml;
 
 export type MOMInlineNode =
   | MOMText

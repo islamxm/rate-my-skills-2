@@ -35,6 +35,7 @@ import {
   createThematicBreak,
   createText,
   createInlineCode,
+  createHtml,
   create,
 } from "./engine.fabric";
 
@@ -564,4 +565,5 @@ export const Engine = {
   createThematicBreak,
   createText,
   createInlineCode,
+  createHtml,
 } as const;

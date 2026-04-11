@@ -60,22 +60,11 @@ export const selectNextBlockThunk =
   (currentNodeId: string): AppThunk =>
   (dispatch, getState) => {
     const state = getState();
-
-    // const { focusedId } = state.selection;
     const { rootOrder } = state.document.doc;
-
-    // if (!focusedId) return;
-
     const indexOfFocused = rootOrder.indexOf(currentNodeId);
-
-    // Безопасный переход к следующему индексу
     const nextIndex = (indexOfFocused + 1) % rootOrder.length;
     const nextId = rootOrder[nextIndex];
-
     if (nextId) {
-      console.log(nextId);
-      // dispatch(selectionStoreActions.selectNode(nextId));
-      // dispatch(selectionStoreActions.focusNode(nextId));
       dispatch(selectionStoreActions.focusNewNode(nextId));
     }
   };

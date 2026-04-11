@@ -83,3 +83,10 @@ export {
   FieldTitle,
 } from "./field";
 export { Spinner } from "./spinner";
+export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  tabsListVariants,
+} from "./tabs";

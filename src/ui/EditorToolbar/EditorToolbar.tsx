@@ -26,7 +26,6 @@ import {
   Heading,
   ListOrdered,
   AlertCircle,
-  MessageCircleWarning,
   Lightbulb,
   Info,
   MessageSquareWarning,
@@ -108,11 +107,22 @@ export const EditorToolbar = () => {
     });
   };
 
+  const addHtml = () => {
+    insertNode({
+      node: MOM.Engine.createHtml(),
+      parentId: null,
+    });
+  };
+
   return (
     <div className={"p-2 gap-2 flex flex-col border-r"}>
       <Tooltip>
         <TooltipTrigger>
-          <Button variant={"secondary"} size={"icon"} onClick={() => addHeading(1)}>
+          <Button
+            variant={"secondary"}
+            size={"icon"}
+            onClick={() => addHeading(1)}
+          >
             <Heading1 />
           </Button>
         </TooltipTrigger>
@@ -120,7 +130,11 @@ export const EditorToolbar = () => {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger>
-          <Button variant={"secondary"} size={"icon"} onClick={() => addHeading(2)}>
+          <Button
+            variant={"secondary"}
+            size={"icon"}
+            onClick={() => addHeading(2)}
+          >
             <Heading2 />
           </Button>
         </TooltipTrigger>
@@ -128,7 +142,11 @@ export const EditorToolbar = () => {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger>
-          <Button variant={"secondary"} size={"icon"} onClick={() => addHeading(3)}>
+          <Button
+            variant={"secondary"}
+            size={"icon"}
+            onClick={() => addHeading(3)}
+          >
             <Heading3 />
           </Button>
         </TooltipTrigger>
@@ -240,6 +258,14 @@ export const EditorToolbar = () => {
           </Button>
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create image block</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button variant={"secondary"} size={"icon"} onClick={addHtml}>
+            {"html"}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create HTML</TooltipContent>
       </Tooltip>
     </div>
   );

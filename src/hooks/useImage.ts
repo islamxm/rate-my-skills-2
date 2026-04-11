@@ -11,26 +11,24 @@ import { toast } from "sonner";
 type UploadVariant = "url" | "custom" | "b64";
 type Status = "idle" | "loading" | "success";
 
-
-
 // неправильно работает Tab при наличии в документе ImageNode
 export function useImage(node: MOMImage) {
   const { removeNode, updateNode } = useDocumentActions();
 
-  const [alt, setAlt] = useState("");
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
-  const [linkUrl, setLinkUrl] = useState("");
+  const [alt, setAlt] = useState(node.alt);
+  const [url, setUrl] = useState(node.url);
+  const [title, setTitle] = useState(node.title);
+  const [linkUrl, setLinkUrl] = useState(node.linkUrl);
 
   const [variant, setVariant] = useState<UploadVariant>();
   const [status, setStatus] = useState<Status>("idle");
 
-  useEffect(() => {
-    setAlt(node.alt || "");
-    setTitle(node.title || "");
-    setUrl(node.url || "");
-    setLinkUrl(node.linkUrl || "");
-  }, [node]);
+  // useEffect(() => {
+  //   setAlt(node.alt || "");
+  //   setTitle(node.title || "");
+  //   setUrl(node.url || "");
+  //   setLinkUrl(node.linkUrl || "");
+  // }, [node]);
 
   function isValidUrl(url: string) {
     try {

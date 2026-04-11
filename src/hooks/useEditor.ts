@@ -96,9 +96,9 @@ export function useEditor<T extends HTMLElement>(
     removeFromSelect(node.id);
 
     // когда окно приложение скрывается нужно вручную сделать blur() чтобы отменить каректку из contenteditable
-    if (ref.current) {
-      // ref.current.blur();
-    }
+    // if (ref.current) {
+    //   ref.current.blur();
+    // }
   };
 
   /** фиксируем факт DOM фокуса (реакция на программный focus()) в сторе */
@@ -271,7 +271,8 @@ export function useEditor<T extends HTMLElement>(
     onPaste,
     onInput,
     onFocus,
-    tabIndex: -1
+    tabIndex: -1,
+    spellCheck: false
   };
 
   return {

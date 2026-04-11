@@ -16,11 +16,13 @@ export const Canvas = () => {
       <motion.div
         ref={ref}
         layout
-        className="markdown-body rounded-lg border h-full flex-1 p-2"
+        className="rounded-lg border h-full flex-1 p-2 bg-white"
       >
-        {rootOrder.map((nodeId) => (
-          <Block nodeId={nodeId} key={nodeId} />
-        ))}
+        <div className="markdown-body">
+          {rootOrder.map((nodeId) => (
+            <Block nodeId={nodeId} key={nodeId} />
+          ))}
+        </div>
       </motion.div>
     </>
   );

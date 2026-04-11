@@ -167,7 +167,8 @@ export function useListEditor(
     onKeyDown,
     onInput,
     onClick: onSelectBlock,
-    tabIndex: -1
+    tabIndex: -1,
+    spellCheck: false
   };
 
   return {

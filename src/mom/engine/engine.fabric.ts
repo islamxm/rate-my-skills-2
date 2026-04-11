@@ -5,6 +5,7 @@ import type {
   MOMBlockquote,
   MOMCode,
   MOMHeading,
+  MOMHtml,
   MOMImage,
   MOMInlineCode,
   MOMList,
@@ -60,7 +61,7 @@ export function createImage(parentId: string | null = null): MOMImage {
     url: "",
     alt: "",
     title: "",
-    linkUrl: ""
+    linkUrl: "",
   };
 }
 
@@ -136,6 +137,17 @@ export function createInlineCode(
     type: "inlineCode",
     value,
   };
+}
+
+export function createHtml(
+  value: string = "",
+  parentId: string | null = null,
+): MOMHtml {
+  return {
+    ...base(parentId),
+    type: "html",
+    value
+  }
 }
 
 export function create<T extends keyof MOMCreateParams>(

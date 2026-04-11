@@ -16,6 +16,7 @@ export const ALLOWED_CHILDREN: Record<MOMNodeType, Array<MOMNodeType>> = {
     "code",
     "thematicBreak",
     "image",
+    "html"
   ],
   blockquote: ["text"],
   alert: ["text"],
@@ -28,6 +29,7 @@ export const ALLOWED_CHILDREN: Record<MOMNodeType, Array<MOMNodeType>> = {
   code: [],
   thematicBreak: [],
   image: [],
+  html: [],
 };
 
 /** Проверка может ли иметь один элемент в качестве ребенка другой элемент (обертка над ALLOWED_CHILDREN) */
