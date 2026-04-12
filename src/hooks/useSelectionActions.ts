@@ -28,12 +28,12 @@ export function useSelectionActions() {
     dispatch(selectionStoreActions.clearAllSelection());
   }
 
-  function selectNextBlock(currentNodeId: string) {
-    dispatch(selectNextBlockThunk(currentNodeId));
+  function selectNextBlock() {
+    dispatch(selectNextBlockThunk());
   }
 
-  function selectPrevBlock(currentNodeId: string) {
-    dispatch(selectPrevBlockThunk(currentNodeId));
+  function selectPrevBlock() {
+    dispatch(selectPrevBlockThunk());
   }
 
   function selectAllBlocks() {
@@ -44,8 +44,8 @@ export function useSelectionActions() {
     dispatch(focusNodeThunk(nodeId));
   }
 
-  function focusNewNode(nodeId: string) {
-    dispatch(selectionStoreActions.focusNewNode(nodeId));
+  function selectAndFocusNode(nodeId: string) {
+    dispatch(selectionStoreActions.selectAndFocusNode(nodeId));
   }
 
   function blur() {
@@ -61,7 +61,7 @@ export function useSelectionActions() {
     selectPrevBlock,
     selectAllBlocks,
     focuseNode,
-    focusNewNode,
+    selectAndFocusNode,
     blur,
   };
 }

@@ -11,7 +11,6 @@ import { toast } from "sonner";
 type UploadVariant = "url" | "custom" | "b64";
 type Status = "idle" | "loading" | "success";
 
-// неправильно работает Tab при наличии в документе ImageNode
 export function useImage(node: MOMImage) {
   const { removeNode, updateNode } = useDocumentActions();
 
@@ -22,13 +21,6 @@ export function useImage(node: MOMImage) {
 
   const [variant, setVariant] = useState<UploadVariant>();
   const [status, setStatus] = useState<Status>("idle");
-
-  // useEffect(() => {
-  //   setAlt(node.alt || "");
-  //   setTitle(node.title || "");
-  //   setUrl(node.url || "");
-  //   setLinkUrl(node.linkUrl || "");
-  // }, [node]);
 
   function isValidUrl(url: string) {
     try {

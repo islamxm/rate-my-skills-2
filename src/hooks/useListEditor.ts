@@ -1,15 +1,11 @@
 import { useRef, type HTMLProps, useEffect } from "react";
-import { useNode } from "./useNode";
-import { useDocument } from "./useDocument";
-import { useSelection } from "./useSelection";
 import { MOM } from "../mom";
 import type { MOMAllContent, MOMTextMarks } from "../mom/types";
 import { useChildren } from "./useChildren";
 import { useCursor } from "./useCursor";
-import { useHistory } from "./useHistory";
 import { useDocumentActions } from "./useDocumentActions";
-import { useNodeSelection } from "./useNodeSelection";
 import { useSelectionActions } from "./useSelectionActions";
+import { useNodeSelection } from "./useNodeSelection";
 
 export function useListEditor(
   nodeId: string,
@@ -23,18 +19,10 @@ export function useListEditor(
   const parentChildren = useChildren(listNodeId);
   // const listNode = useNode(listNodeId);
   const { commitInlineEdit } = useDocumentActions();
-  // const { isFocused, focuseNode, prevBlock } = useSelection();
-  const { focuseNode, selectPrevBlock } = useSelectionActions();
+  const { focuseNode } = useSelectionActions();
   const { isFocused } = useNodeSelection(listNodeId);
-  const { undo, redo } = useHistory();
   const ref = useRef<HTMLLIElement>(null);
   const { saveCursor, restoreCursor } = useCursor<HTMLLIElement>(ref);
-
-  useEffect(() => {
-    if (isFocused && ref.current) {
-      // ref.current.focus();
-    }
-  }, [isFocused]);
 
   /** берем управление DOM в свои руки чтобы не было ошибки c [React]removeChildren() */
   useEffect(() => {
@@ -116,6 +104,7 @@ export function useListEditor(
       switch (e.code) {
         case "KeyU":
           e.preventDefault();
+          applyFormat("lineThrough");
           return;
         case "KeyI":
           e.preventDefault();
@@ -125,40 +114,33 @@ export function useListEditor(
           e.preventDefault();
           applyFormat("bold");
           break;
-        case "KeyZ":
-          e.preventDefault();
-          // тут надо учесть что отмена происходит только в рамках действий текущего блока
-          undo();
-          break;
       }
       return;
     }
-    if (e.key === "Enter" && e.shiftKey) {
-      e.preventDefault();
-      return;
-    }
-    if (e.key === "Enter") {
+    if (e.code === "Enter" && e.shiftKey) {
       e.preventDefault();
       createItem();
       return;
     }
-    if (e.key === "Backspace") {
+    if (e.code === "Backspace") {
       const isEmpty = !ref.current?.textContent;
-      const isLastItem = parentChildren.length === 1;
       if (isEmpty) {
         deleteItem();
-        if (isLastItem) {
-          selectPrevBlock(listNodeId);
-        }
       }
     }
-    if (e.key === "ArrowUp") {
+    if (e.code === "ArrowUp") {
       focusItem(index - 1);
     }
-    if (e.key === "ArrowDown") {
+    if (e.code === "ArrowDown") {
       focusItem(index + 1);
     }
   };
+
+  useEffect(() => {
+    if (isFocused) {
+      ref.current?.focus();
+    }
+  }, [isFocused]);
 
   const editorProps: HTMLProps<HTMLLIElement> = {
     contentEditable: true,
@@ -168,7 +150,8 @@ export function useListEditor(
     onInput,
     onClick: onSelectBlock,
     tabIndex: -1,
-    spellCheck: false
+    spellCheck: false,
+    onPaste
   };
 
   return {

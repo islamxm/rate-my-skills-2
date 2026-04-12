@@ -37,7 +37,7 @@ import { useSelectionActions } from "@/hooks/useSelectionActions";
 
 export const EditorToolbar = () => {
   const { insertNode, insertNodes } = useDocumentActions();
-  const { focusNewNode } = useSelectionActions();
+  const { selectAndFocusNode } = useSelectionActions();
 
   const addParagraph = () => {
     const node = MOM.Engine.createParagraph();
@@ -45,7 +45,7 @@ export const EditorToolbar = () => {
       node,
       parentId: null,
     });
-    focusNewNode(node.id);
+    selectAndFocusNode(node.id);
   };
 
   const addHeading = (depth: MOMHeading["depth"]) => {
@@ -55,7 +55,7 @@ export const EditorToolbar = () => {
       parentId: null,
     });
     // выпадающее меню кнопки хединга как то мешает навести фокус
-    focusNewNode(node.id);
+    selectAndFocusNode(node.id);
   };
 
   const addBlockquote = () => {
@@ -64,7 +64,7 @@ export const EditorToolbar = () => {
       node,
       parentId: null,
     });
-    focusNewNode(node.id);
+    selectAndFocusNode(node.id);
   };
 
   const addAlert = (variant?: MOMAlert["variant"]) => {
@@ -73,14 +73,16 @@ export const EditorToolbar = () => {
       node,
       parentId: null,
     });
-    focusNewNode(node.id);
+    selectAndFocusNode(node.id);
   };
 
   const addCode = () => {
+    const node = MOM.Engine.createCode();
     insertNode({
-      node: MOM.Engine.createCode(),
+      node,
       parentId: null,
     });
+    selectAndFocusNode(node.id);
   };
 
   const addList = (isOrdered?: boolean) => {
@@ -91,27 +93,34 @@ export const EditorToolbar = () => {
       { node: listNode, parentId: null },
       { node: listItemNode, parentId: listNode.id, index: 0 },
     ]);
+    selectAndFocusNode(listNode.id);
   };
 
   const addImage = () => {
+    const node = MOM.Engine.createImage();
     insertNode({
-      node: MOM.Engine.createImage(),
+      node,
       parentId: null,
     });
+    selectAndFocusNode(node.id);
   };
 
   const addBreak = () => {
+    const node = MOM.Engine.createThematicBreak();
     insertNode({
-      node: MOM.Engine.createThematicBreak(),
+      node,
       parentId: null,
     });
+    selectAndFocusNode(node.id);
   };
 
   const addHtml = () => {
+    const node = MOM.Engine.createHtml();
     insertNode({
-      node: MOM.Engine.createHtml(),
+      node,
       parentId: null,
     });
+    selectAndFocusNode(node.id);
   };
 
   return (
@@ -152,24 +161,42 @@ export const EditorToolbar = () => {
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create Heading 3</TooltipContent>
       </Tooltip>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button variant={"secondary"} size={"icon"}>
-            <Heading />
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            variant={"secondary"}
+            size={"icon"}
+            onClick={() => addHeading(4)}
+          >
+            <Heading4 />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side={"right"}>
-          <DropdownMenuItem onClick={() => addHeading(4)}>
-            <Heading4 /> Heading 4
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addHeading(5)}>
-            <Heading5 /> Heading 5
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addHeading(6)}>
-            <Heading6 /> Heading 6
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create Heading 4</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            variant={"secondary"}
+            size={"icon"}
+            onClick={() => addHeading(5)}
+          >
+            <Heading5 />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create Heading 5</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger>
+          <Button
+            variant={"secondary"}
+            size={"icon"}
+            onClick={() => addHeading(6)}
+          >
+            <Heading6 />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create Heading 6</TooltipContent>
+      </Tooltip>
       <Tooltip>
         <TooltipTrigger>
           <Button variant={"secondary"} size={"icon"} onClick={addParagraph}>

@@ -1,4 +1,4 @@
-import { useDocument } from "../../hooks";
+import { useDocument, useDocumentShortcuts } from "../../hooks";
 import { Block } from "../Block/Block";
 import { motion } from "motion/react";
 import { LinkTooltip } from "../LinkTooltip/LinkTooltip";
@@ -9,6 +9,7 @@ export const Canvas = () => {
   const { rootOrder } = useDocument();
   const ref = useRef<HTMLDivElement>(null);
   const { addLink } = useDocumentActions();
+  useDocumentShortcuts();
 
   return (
     <>

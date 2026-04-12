@@ -1,8 +1,13 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
 import type { MOMAllContent, MOMDocument } from "../../mom/types";
-import { type BatchOp, type MOMOperation } from "../../mom/engine/engine.types";
+import {
+  type BatchOp,
+  type EngineResult,
+  type MOMOperation,
+} from "../../mom/engine/engine.types";
 import { MOM } from "../../mom";
 import type { AppThunk } from "../config";
+import { selectionStoreActions } from "./selectionSlice";
 
 type UndoStack = {
   past: MOMOperation[];
@@ -12,8 +17,6 @@ type UndoStack = {
 type InitialState = {
   doc: MOMDocument;
   history: UndoStack;
-  /** возможно нигде не используется, рассмотреть вариант удаления */
-  dirty: boolean;
   copiedNode: MOMAllContent | undefined;
 };
 
@@ -30,7 +33,6 @@ const initialState: InitialState = {
     groups: {},
   },
   history: { past: [], future: [] },
-  dirty: false,
   copiedNode: undefined,
 };
 
@@ -49,8 +51,6 @@ function commitResult(
   if (state.history.past.length > MAX_HISTORY_DEPTH) {
     state.history.past.shift();
   }
-
-  state.dirty = true;
 }
 
 export const documentSlice = createSlice({
@@ -63,9 +63,10 @@ export const documentSlice = createSlice({
         node: MOMAllContent;
         parentId: string | null;
         afterNodeId?: string;
+        index?: number;
       }>,
     ) => {
-      const { afterNodeId, ...payload } = action.payload;
+      const { afterNodeId, index: inpIndex, ...payload } = action.payload;
       const index = afterNodeId
         ? state.doc.rootOrder.indexOf(afterNodeId) + 1
         : state.doc.rootOrder.length;
@@ -73,7 +74,7 @@ export const documentSlice = createSlice({
       const result = MOM.Engine.insertNode({
         doc: state.doc,
         ...payload,
-        index,
+        index: inpIndex ?? index,
       });
       commitResult(state, result);
     },
@@ -105,6 +106,13 @@ export const documentSlice = createSlice({
       const result = MOM.Engine.removeNode({
         doc: state.doc,
         ...action.payload,
+      });
+      commitResult(state, result);
+    },
+    removeNodes: (state, action: PayloadAction<Array<string>>) => {
+      const result = MOM.Engine.removeNodes({
+        doc: state.doc,
+        nodeIds: action.payload,
       });
       commitResult(state, result);
     },
@@ -181,7 +189,6 @@ export const documentSlice = createSlice({
       state.doc = MOM.Engine.applyOp({ doc: state.doc, op: invertedOp });
 
       state.history.future.push(op);
-      state.dirty = true;
     },
     redo: (state) => {
       const op = state.history.future.pop();
@@ -190,10 +197,6 @@ export const documentSlice = createSlice({
       state.doc = MOM.Engine.applyOp({ doc: state.doc, op });
 
       state.history.past.push(op);
-      state.dirty = true;
-    },
-    markSaved: (state) => {
-      state.dirty = false;
     },
 
     commitInlineEdit: (
@@ -245,10 +248,9 @@ export const documentSlice = createSlice({
       state.doc.groups = {};
       state.doc.nodes = {};
       state.doc.rootOrder = [];
-      state.dirty = false;
-      state.history = {past: [], future: []};
+      state.history = { past: [], future: [] };
       state.copiedNode = undefined;
-    }
+    },
   },
 });
 
@@ -264,6 +266,109 @@ export const addLinkThunk =
         patch: { ...node, url },
       }),
     );
+  };
+
+export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
+  const state = getState();
+  const rootOrder = state.document.doc.rootOrder;
+  const selectedId = state.selection.selectedIds[0];
+  if (!selectedId) return;
+
+  const currentNode = state.document.doc.nodes[selectedId];
+  if (!currentNode) return;
+
+  const type = currentNode.type;
+  const id = nanoid();
+
+  switch (type) {
+    case "paragraph":
+      dispatch(
+        documentStoreActions.insertNode({
+          node: { ...MOM.Engine.createParagraph(currentNode.parentId), id },
+          parentId: null,
+          afterNodeId: currentNode.id,
+        }),
+      );
+      break;
+    case "blockquote":
+      dispatch(
+        documentStoreActions.insertNode({
+          node: { ...MOM.Engine.createBlockquote(currentNode.parentId), id },
+          parentId: null,
+          afterNodeId: currentNode.id,
+        }),
+      );
+      break;
+    case "heading":
+      dispatch(
+        documentStoreActions.insertNode({
+          node: {
+            ...MOM.Engine.createHeading(
+              currentNode.depth,
+              currentNode.parentId,
+            ),
+            id,
+          },
+          parentId: null,
+          afterNodeId: currentNode.id,
+        }),
+      );
+      break;
+    case "alert":
+      dispatch(
+        documentStoreActions.insertNode({
+          node: {
+            ...MOM.Engine.createAlert(
+              currentNode.parentId,
+              currentNode.variant,
+            ),
+            id,
+          },
+          parentId: null,
+          afterNodeId: currentNode.id,
+        }),
+      );
+      break;
+    case "list": {
+      const listNode = MOM.Engine.createList(currentNode.ordered);
+      const listItemNode = MOM.Engine.createListItem(listNode.id);
+      const index = rootOrder.indexOf(selectedId) + 1;
+      dispatch(
+        documentStoreActions.insertNodes({
+          ops: [
+            { node: { ...listNode, id }, parentId: null, index },
+            { node: listItemNode, parentId: id },
+          ],
+        }),
+      );
+      break;
+    }
+  }
+  dispatch(selectionStoreActions.selectAndFocusNode(id));
+};
+
+export const deleteSelectedBlocksThunk =
+  (): AppThunk => (dispatch, getState) => {
+    const state = getState();
+    const selectedIds = state.selection.selectedIds;
+    const rootOrder = state.document.doc.rootOrder;
+
+    if (selectedIds.length === 0) return;
+    dispatch(documentStoreActions.removeNodes(selectedIds));
+
+    if (rootOrder.length === selectedIds.length) return;
+
+    const firstSelectedIndex = rootOrder.indexOf(selectedIds[0]);
+    const lastSelectedIndex = rootOrder.indexOf(
+      selectedIds[selectedIds.length - 1],
+    );
+
+    const newSelectId =
+      firstSelectedIndex === 0
+        ? rootOrder[lastSelectedIndex + 1]
+        : rootOrder[firstSelectedIndex - 1];
+
+    dispatch(selectionStoreActions.selectNode(newSelectId));
   };
 
 export const documentStoreActions = documentSlice.actions;

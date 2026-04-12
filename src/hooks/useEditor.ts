@@ -29,18 +29,9 @@ export function useEditor<T extends HTMLElement>(
   disableFormatting?: boolean,
 ) {
   const children = useChildren(node.id);
-  const {
-    removeFromSelect,
-    selectNextBlock,
-    selectPrevBlock,
-    focuseNode,
-    focusNewNode,
-    blur,
-  } = useSelectionActions();
+  const { focuseNode, blur } = useSelectionActions();
   const { isSelected, isFocused } = useNodeSelection(node.id);
-  const { commitInlineEdit, updateNode, removeNode, insertNode } =
-    useDocumentActions();
-  const { undo } = useHistory();
+  const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
   const isActive = isSelected && isFocused;
@@ -49,30 +40,19 @@ export function useEditor<T extends HTMLElement>(
   useEffect(() => {
     if (!ref.current) return;
     let html: string = "";
-    // тут тоже приходится проверить так как некоторые блоки не могут в себе содержать детей кроме plainText, (пока только heading)
+
     if (parseType === "deep") {
       html = MOM.Serializer.momToHTML(children, node.id);
     }
     if (parseType === "plain") {
-      // undo/redo не восстанавливает в хедингах
       html = ref.current.textContent;
     }
     ref.current.innerHTML = html;
-    // для восстановления после applyFormat, onSave и тд
+
     if (isActive) {
       restoreCursor();
     }
   }, [children, isActive, parseType]);
-
-  /** обработка случая когда блок выбран (нажато вне contenteditable), чтобы сразу был фокус
-   * наверное это временный костыль пока не поправим стили отступов - нужно чтобы они были у Block а не у contenteditable
-   */
-  useEffect(() => {
-    if (!ref.current) return;
-    if (isSelected) {
-      ref.current.focus();
-    }
-  }, [isSelected]);
 
   /** сохранение результата редактирования (данные беруться из dom) */
   const onSave = () => {
@@ -93,17 +73,6 @@ export function useEditor<T extends HTMLElement>(
   const onBlur = () => {
     onSave();
     blur();
-    removeFromSelect(node.id);
-
-    // когда окно приложение скрывается нужно вручную сделать blur() чтобы отменить каректку из contenteditable
-    // if (ref.current) {
-    //   ref.current.blur();
-    // }
-  };
-
-  /** фиксируем факт DOM фокуса (реакция на программный focus()) в сторе */
-  const onFocus = () => {
-    focuseNode(node.id);
   };
 
   /** при клике на блок гарантированно фиксируем в сторе (дефолтный клик)*/
@@ -111,13 +80,19 @@ export function useEditor<T extends HTMLElement>(
     focuseNode(node.id);
   };
 
+  useEffect(() => {
+    if (isFocused) {
+      ref.current?.focus();
+    }
+  }, [isFocused]);
+
   /** обработка действий которые идут через клавишу */
   const onKeyboardEvent = (e: React.KeyboardEvent) => {
-    // продумать маппер
     if (e.ctrlKey || e.metaKey) {
       switch (e.code) {
         case "KeyU":
           e.preventDefault();
+          applyFormat("lineThrough");
           return;
         case "KeyI":
           e.preventDefault();
@@ -127,90 +102,9 @@ export function useEditor<T extends HTMLElement>(
           e.preventDefault();
           applyFormat("bold");
           break;
-        case "KeyZ":
-          e.preventDefault();
-          // тут надо учесть что отмена происходит только в рамках действий текущего блока
-          undo();
-          break;
       }
       return;
     }
-    if (e.shiftKey) {
-      switch (e.code) {
-        case "Tab":
-          console.warn(
-            "когда прыгает к самому начальному блоку то введенные данные в текущем блоке не сохраняютсяы",
-          );
-          e.preventDefault();
-          onBlur();
-          selectPrevBlock(node.id);
-          break;
-      }
-      return;
-    }
-    if (e.code === "Tab") {
-      console.warn(
-        "когда прыгает к самому начальному блоку то введенные данные в текущем блоке не сохраняютсяы",
-      );
-      e.preventDefault();
-      onBlur();
-      selectNextBlock(node.id);
-      return;
-    }
-    if (e.code === "Enter") {
-      e.preventDefault();
-      onSave();
-      createNewBlock();
-      return;
-    }
-    if (e.code === "Backspace") {
-      const isEmpty = !ref.current?.textContent;
-      if (isEmpty) {
-        console.warn(
-          "Тут стирается последний символ из блока куда переходит фокус, то есть такое двойное удаление символа",
-        );
-        selectPrevBlock(node.id);
-        removeNode(node.id);
-      }
-      return;
-    }
-  };
-
-  /** создание нового подобного блока (в основном при нажатии на Enter) */
-  const createNewBlock = () => {
-    const type = node.type;
-    const id = nanoid();
-
-    switch (type) {
-      case "paragraph":
-        insertNode({
-          node: { ...MOM.Engine.createParagraph(node.parentId), id },
-          parentId: null,
-          afterNodeId: node.id,
-        });
-        break;
-      case "blockquote":
-        insertNode({
-          node: { ...MOM.Engine.createBlockquote(node.parentId), id },
-          parentId: null,
-          afterNodeId: node.id,
-        });
-        break;
-      case "heading":
-        insertNode({
-          node: { ...MOM.Engine.createHeading(node.depth, node.parentId), id },
-          parentId: null,
-          afterNodeId: node.id,
-        });
-        break;
-      case "alert":
-        insertNode({
-          node: { ...MOM.Engine.createAlert(node.parentId, node.variant), id },
-          parentId: null,
-          afterNodeId: node.id,
-        });
-    }
-    focusNewNode(id);
   };
 
   /** чистим от форматирования вставляемый текст */
@@ -270,9 +164,8 @@ export function useEditor<T extends HTMLElement>(
     onKeyDown: onKeyboardEvent,
     onPaste,
     onInput,
-    onFocus,
     tabIndex: -1,
-    spellCheck: false
+    spellCheck: false,
   };
 
   return {

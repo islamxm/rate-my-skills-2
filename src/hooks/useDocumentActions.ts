@@ -2,6 +2,8 @@ import type { MOMAllContent } from "@/mom/types";
 import { useDispatch } from "@/shared/lib";
 import {
   addLinkThunk,
+  createNewBlockThunk,
+  deleteSelectedBlocksThunk,
   documentStoreActions,
 } from "@/store/slices/documentSlice";
 
@@ -80,6 +82,14 @@ export function useDocumentActions() {
     dispatch(documentStoreActions.clearDocument());
   }
 
+  function createNewBlock() {
+    dispatch(createNewBlockThunk());
+  }
+
+  function deleteSelectedBlocks() {
+    dispatch(deleteSelectedBlocksThunk());
+  }
+
   return {
     insertNode,
     insertNodes,
@@ -92,6 +102,8 @@ export function useDocumentActions() {
     addLink,
     commitInlineEdit,
     copyNode,
-    clearDocument
+    clearDocument,
+    createNewBlock,
+    deleteSelectedBlocks,
   };
 }

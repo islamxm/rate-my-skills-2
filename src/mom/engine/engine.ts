@@ -124,8 +124,6 @@ export function removeNode(opt: {
   }
   const parentId = node.parentId;
 
-  // const siblings = getSiblingNodes(doc, nodeId).map((n) => n.id);
-
   // тут специально берем список ВКЛЮЧАЯ самого элемента чтобы логика не ломалась, наверное стоит создать отдельный selector именно для этого случая
   const siblings =
     parentId === null
@@ -156,6 +154,41 @@ export function removeNode(opt: {
   };
 
   return { op, doc: newDoc };
+}
+
+export function removeNodes(opt: {
+  doc: MOMDocument;
+  nodeIds: Array<string>;
+}): EngineResult {
+  const { doc, nodeIds } = opt;
+  let currentDoc = doc;
+
+  const allOps: Array<MOMOperation> = [];
+
+  for (const nodeId of nodeIds) {
+    if (!currentDoc.nodes[nodeId]) {
+      continue;
+    }
+
+    const result = removeNode({
+      doc: currentDoc,
+      nodeId,
+    });
+
+    currentDoc = result.doc;
+    allOps.push(result.op);
+  }
+  if (allOps.length === 0) {
+    return {
+      doc,
+      op: { type: "batch", ops: [] },
+    };
+  }
+
+  return {
+    doc: currentDoc,
+    op: { type: "batch", ops: allOps },
+  };
 }
 
 export function updateNode(opt: {
@@ -544,6 +577,7 @@ export const Engine = {
   insertNode,
   insertNodes,
   removeNode,
+  removeNodes,
   updateNode,
   moveNode,
   groupNodes,

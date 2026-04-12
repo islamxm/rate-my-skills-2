@@ -10,3 +10,5 @@ export { useCursor } from "./useCursor";
 export { useUI } from "./useUI";
 export { useImage } from "./useImage";
 export { useHtml } from "./useHtml";
+export { useDocumentShortcuts } from "./useDocumentShortcuts";
+export { useEvent } from "./useEvent";

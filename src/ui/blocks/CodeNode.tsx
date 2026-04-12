@@ -1,4 +1,4 @@
-import { useState, type ChangeEvent, type FC } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FC } from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import { useNode } from "../../hooks";
 import { MOM } from "../../mom";
@@ -77,16 +77,22 @@ const LANGUAGE_OPTIONS = [
 
 export const CodeNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
-  const { updateNode, removeNode } = useDocumentActions();
-  const { selectPrevBlock } = useSelectionActions();
-  const { isSelected } = useNodeSelection(nodeId);
+  const { updateNode } = useDocumentActions();
+  const { isSelected, isFocused } = useNodeSelection(nodeId);
 
   const [code, setCode] = useState<string>((node as MOMCode)?.value || "");
   const [language, setLanguage] = useState<string>(
     (node as any).lang || "javascript",
   );
+  const ref = useRef<HTMLTextAreaElement>(null);
 
   const isValidNode = MOM.Guard.isCodeNode(node);
+
+  useEffect(() => {
+    if (isFocused) {
+      ref.current?.focus();
+    }
+  }, [isFocused]);
 
   if (!isValidNode) return null;
 
@@ -126,13 +132,6 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
         lang: language,
       },
     });
-  };
-
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !code) {
-      selectPrevBlock(node.id);
-      removeNode(nodeId);
-    }
   };
 
   const copyToClipboard = async () => {
@@ -201,9 +200,9 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
             language={language}
             placeholder="..."
             onChange={onCodeChange}
-            onKeyDown={onKeyDown}
             onBlur={onBlur}
             className="code-block-editor"
+            ref={ref}
           />
         )}
       </div>

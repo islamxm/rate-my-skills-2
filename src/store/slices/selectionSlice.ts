@@ -20,14 +20,14 @@ export const selectionSlice = createSlice({
     selectNode: (state, action: PayloadAction<string>) => {
       state.selectedIds = [action.payload];
     },
+    selectBatch: (state, action: PayloadAction<MOMDocument["nodes"]>) => {
+      state.selectedIds = Object.entries(action.payload).map(([_, v]) => v.id);
+    },
     addToSelection: (state, action: PayloadAction<string>) => {
       if (!state.selectedIds.includes(action.payload)) {
         state.selectedIds.push(action.payload);
         state.focusedId = null;
       }
-    },
-    selectBatch: (state, action: PayloadAction<MOMDocument["nodes"]>) => {
-      state.selectedIds = Object.entries(action.payload).map(([_, v]) => v.id);
     },
     removeFromSelection: (state, action: PayloadAction<string>) => {
       state.selectedIds = state.selectedIds.filter(
@@ -42,7 +42,7 @@ export const selectionSlice = createSlice({
     focusNode: (state, action: PayloadAction<string>) => {
       state.focusedId = action.payload;
     },
-    focusNewNode: (state, action: PayloadAction<string>) => {
+    selectAndFocusNode: (state, action: PayloadAction<string>) => {
       state.focusedId = action.payload;
       state.selectedIds = [action.payload];
     },
@@ -56,18 +56,53 @@ export const selectionSlice = createSlice({
   },
 });
 
-export const selectNextBlockThunk =
-  (currentNodeId: string): AppThunk =>
-  (dispatch, getState) => {
-    const state = getState();
-    const { rootOrder } = state.document.doc;
-    const indexOfFocused = rootOrder.indexOf(currentNodeId);
-    const nextIndex = (indexOfFocused + 1) % rootOrder.length;
-    const nextId = rootOrder[nextIndex];
-    if (nextId) {
-      dispatch(selectionStoreActions.focusNewNode(nextId));
+export const selectNextBlockThunk = (): AppThunk => (dispatch, getState) => {
+  const state = getState();
+  const rootOrder = state.document.doc.rootOrder;
+  const selectedId = state.selection.selectedIds[0];
+
+  if (rootOrder.length === 0) return;
+
+  let targetNodeId;
+
+  if (!selectedId) {
+    targetNodeId = rootOrder[0];
+  } else {
+    const selectedIndex = rootOrder.indexOf(selectedId);
+    if (selectedIndex === rootOrder.length - 1) {
+      targetNodeId = rootOrder[0];
+    } else {
+      targetNodeId = rootOrder[selectedIndex + 1];
     }
-  };
+  }
+  if (!targetNodeId) return;
+  dispatch(selectionStoreActions.selectAndFocusNode(targetNodeId));
+};
+
+export const selectPrevBlockThunk = (): AppThunk => (dispatch, getState) => {
+  const state = getState();
+  const rootOrder = state.document.doc.rootOrder;
+  const selectedId = state.selection.selectedIds[0];
+
+  if (rootOrder.length === 0) return;
+
+  let targetNodeId;
+
+  if (!selectedId) {
+    targetNodeId = rootOrder[0];
+  } else {
+    const selectedIndex = rootOrder.indexOf(selectedId);
+    if (selectedIndex === 0) {
+      targetNodeId = rootOrder[rootOrder.length - 1];
+    }
+    if (selectedIndex > 0) {
+      targetNodeId = rootOrder[selectedIndex - 1];
+    }
+  }
+
+  if (!targetNodeId) return;
+  dispatch(selectionStoreActions.selectAndFocusNode(targetNodeId));
+};
 
 export const addToSelectionThunk =
   (nodeId: string): AppThunk =>
@@ -101,21 +136,6 @@ export const selectNodeThunk =
       return;
     }
     dispatch(selectionStoreActions.selectNode(nodeId));
-  };
-
-export const selectPrevBlockThunk =
-  (currentNodeId: string): AppThunk =>
-  (dispatch, getState) => {
-    const state = getState();
-    const rootOrder = state.document.doc.rootOrder;
-
-    const indexOfFocused = rootOrder.indexOf(currentNodeId);
-    const prevIndex =
-      indexOfFocused - 1 < 0 ? rootOrder.length - 1 : indexOfFocused - 1;
-    const targetNodeId = rootOrder[prevIndex];
-    dispatch(selectionStoreActions.focusNewNode(targetNodeId));
-    // dispatch(selectionStoreActions.selectNode(rootOrder[prevIndex]));
-    // dispatch(selectionStoreActions.focusNode(rootOrder[prevIndex]));
   };
 
 export const selectAllBlocksThunk = (): AppThunk => (dispatch, getState) => {
