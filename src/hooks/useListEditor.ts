@@ -40,9 +40,6 @@ export function useListEditor(
 
   const onBlur = () => {
     onSave();
-    // blur();
-    // removeFromSelect(nodeId);
-
     // когда окно приложение скрывается нужно вручную сделать blur() чтобы отменить каректку из contenteditable
     if (ref.current) {
       ref.current.blur();

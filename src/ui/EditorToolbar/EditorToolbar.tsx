@@ -23,7 +23,6 @@ import {
   Image,
   SeparatorHorizontal,
   Code2,
-  Heading,
   ListOrdered,
   AlertCircle,
   Lightbulb,
@@ -31,7 +30,6 @@ import {
   MessageSquareWarning,
   TriangleAlert,
   OctagonAlert,
-  Table,
 } from "lucide-react";
 import { useSelectionActions } from "@/hooks/useSelectionActions";
 

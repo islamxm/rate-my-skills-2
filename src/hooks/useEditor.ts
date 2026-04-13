@@ -2,7 +2,6 @@ import { useEffect, useRef, type HTMLProps } from "react";
 import { MOM } from "../mom";
 import type { MOMAllContent, MOMTextMarks } from "../mom/types";
 import { useHistory } from "./useHistory";
-import { nanoid } from "nanoid";
 import { useCursor } from "./useCursor";
 import { useDocumentActions } from "./useDocumentActions";
 import { useChildren } from "./useChildren";
@@ -30,19 +29,25 @@ export function useEditor<T extends HTMLElement>(
 ) {
   const children = useChildren(node.id);
   const { focuseNode, blur } = useSelectionActions();
-  const { isSelected, isFocused } = useNodeSelection(node.id);
+  const { isSelected, isFocused, isOnlySelected } = useNodeSelection(node.id);
   const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
+
+  // пока непонятно
   const isActive = isSelected && isFocused;
 
-  /** для того чтобы нормально вставлять html в зависимости от измененного стейта (отбираем контрол у реакта) */
+  /** для того чтобы нормально вставлять html в зависимости от измененного стейта (отбираем контроль у реакта) */
   useEffect(() => {
     if (!ref.current) return;
     let html: string = "";
 
     if (parseType === "deep") {
       html = MOM.Serializer.momToHTML(children, node.id);
+      if (children.length === 0) {
+        const mom = MOM.Parser.domToMom(ref.current);
+        html = MOM.Serializer.momToHTML(mom, node.id);
+      }
     }
     if (parseType === "plain") {
       html = ref.current.textContent;
@@ -55,7 +60,7 @@ export function useEditor<T extends HTMLElement>(
   }, [children, isActive, parseType]);
 
   /** сохранение результата редактирования (данные беруться из dom) */
-  const onSave = () => {
+  const save = () => {
     if (!ref.current) return;
     if (parseType === "plain") {
       updateNode({
@@ -65,13 +70,14 @@ export function useEditor<T extends HTMLElement>(
     }
     if (parseType === "deep") {
       const nodes = MOM.Parser.domToMom(ref.current);
+      if (nodes.length === 0) return;
       commitInlineEdit({ nodeId: node.id, nodes });
     }
   };
 
   /** при отключении фокуса предварительно сохраняем результат и сбрасываем выделение (надо пересмотреть когда вернемся к множественному выделению блоков - группировка) */
   const onBlur = () => {
-    onSave();
+    save();
     blur();
   };
 
@@ -172,6 +178,6 @@ export function useEditor<T extends HTMLElement>(
     ref,
     editorProps,
     applyFormat,
-    save: onSave,
+    save,
   };
 }
