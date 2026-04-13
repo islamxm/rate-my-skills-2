@@ -10,17 +10,37 @@ export function applyFormat(
 ) {
   const selection = window.getSelection();
   if (!selection || isNothingSelected(selection)) return;
-  const range = getRange(selection);
+  let range = getRange(selection);
+
+  const rangeSnapshot = {
+    startOffset: range.startOffset,
+    endOffset: range.endOffset,
+    startContainer: range.startContainer,
+    endContainer: range.endContainer,
+  };
+
   const containedElements = getRangeContainedElements(range);
 
   const blockNode = getBlockNode(containedElements[0]);
+
   if (!blockNode) return;
 
-  const parentId = blockNode.getAttribute("data-id") as string;
+  const parentId = blockNode.dataset.id as string;
 
   const normalizedNodes = normalizeBlockChildren(blockNode, nodes);
 
+  // временное решение (небезопасное) в тех случаях когда программно создается элемент
+  if (containedElements.length === 1) {
+    const p = containedElements[0].firstChild as Node;
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    range.setStart(p, rangeSnapshot.startOffset);
+    range.setEnd(p, rangeSnapshot.endOffset);
+    sel?.addRange(range);
+  }
+
   const fragments = getFragments(range, containedElements);
+
   const existingNodes = getExistingNodes(normalizedNodes, blockNode.children);
   const newNodes = buildNodes({
     fragments,
@@ -62,7 +82,7 @@ function getRangeContainedElements(range: Range) {
 
     if (parent.tagName === "SPAN") {
       selectedElements.add(parent);
-    } else if (parent === rootElement || parent.hasAttribute("data-id")) {
+    } else if (parent === rootElement || parent.dataset.id) {
       const text = currentNode as Text;
       const span = wrapRawTextNode(text, parent);
       selectedElements.add(span);
@@ -83,9 +103,10 @@ function wrapRawTextNode(
   );
 
   const span = document.createElement("span");
-  span.setAttribute("data-id", newMomText.id);
-  span.setAttribute("data-type", "text");
-  span.setAttribute("data-parent-id", parentId);
+
+  span.dataset.id = newMomText.id;
+  span.dataset.type = "text";
+  span.dataset.parentId = parentId;
 
   blockNode.insertBefore(span, textNode);
   span.appendChild(textNode);
@@ -260,9 +281,10 @@ function normalizeBlockChildren(
     };
 
     const span = document.createElement("span");
-    span.setAttribute("data-id", newTextNode.id);
-    span.setAttribute("data-type", "text");
-    span.setAttribute("data-parent-id", parentId);
+
+    span.dataset.id = newTextNode.id;
+    span.dataset.type = "text";
+    span.dataset.parentId = parentId;
 
     blockNode.insertBefore(span, child);
     span.appendChild(child);
@@ -385,11 +407,11 @@ export function getCssClassByNode(node: MOMAllContent) {
   if (node.type === "list") {
     return "ul";
   }
-  if(node.type === "thematicBreak") {
-    return "hr"
+  if (node.type === "thematicBreak") {
+    return "hr";
   }
-  if(node.type === "image") {
-    return "img"
+  if (node.type === "image") {
+    return "img";
   }
   return "";
 }

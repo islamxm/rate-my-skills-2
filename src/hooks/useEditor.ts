@@ -118,15 +118,13 @@ export function useEditor<T extends HTMLElement>(
     e.preventDefault();
     const text = e.clipboardData.getData("text/plain");
     document.execCommand("insertText", false, text);
-    onSave();
+    save();
   };
 
   const applyFormat = (format: keyof MOMTextMarks) => {
     if (!ref.current || disableFormatting) return;
     saveCursor();
-    console.warn(
-      "Частичное форматирование в сыром тексте не работает, применяется ко всем символам",
-    );
+
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
     commitInlineEdit({ nodeId: node.id, nodes: result.nodes });
