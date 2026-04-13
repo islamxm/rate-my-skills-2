@@ -148,8 +148,8 @@ export const TopToolbar = () => {
             Export as .md
           </Button>
           <Tooltip>
-            <TooltipTrigger>
-              <Button disabled className="bg-blue-500 hover:bg-blue-900">
+            <TooltipTrigger asChild>
+              <Button className="bg-blue-500 hover:bg-blue-900">
                 <Grid2X2Plus />
                 Download
               </Button>

@@ -1,10 +1,8 @@
-import { useState, type ChangeEvent, type FC } from "react";
+import { type FC } from "react";
 import { useHtml, useNode } from "../../hooks";
 import { MOM } from "../../mom";
 import type { MOMHtml } from "../../mom/types";
 import { AppWindowIcon, CodeIcon } from "lucide-react";
-import { useDocumentActions } from "@/hooks/useDocumentActions";
-import { useSelectionActions } from "@/hooks/useSelectionActions";
 import { Tabs, TabsList, TabsTrigger } from "../shared";
 import Textarea from "react-textarea-autosize";
 

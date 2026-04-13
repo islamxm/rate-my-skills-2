@@ -126,7 +126,7 @@ export const EditorToolbar = () => {
   return (
     <div className={"p-2 gap-2 flex flex-col border-r"}>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -138,7 +138,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Heading 1</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -150,7 +150,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Heading 2</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -162,7 +162,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Heading 3</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -174,7 +174,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Heading 4</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -186,7 +186,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Heading 5</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -198,7 +198,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Heading 6</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addParagraph}>
             P
           </Button>
@@ -206,7 +206,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Paragraph</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addBlockquote}>
             <Quote />
           </Button>
@@ -214,9 +214,9 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Quote</TooltipContent>
       </Tooltip>
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button variant={"secondary"} size={"icon"}>
                 <AlertCircle />
               </Button>
@@ -243,7 +243,7 @@ export const EditorToolbar = () => {
         </DropdownMenuContent>
       </DropdownMenu>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addCode}>
             <Code2 />
           </Button>
@@ -251,7 +251,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Code</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button
             variant={"secondary"}
             size={"icon"}
@@ -263,7 +263,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Ordered List</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={() => addList()}>
             <List />
           </Button>
@@ -271,7 +271,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Unordered List</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addBreak}>
             <SeparatorHorizontal />
           </Button>
@@ -279,7 +279,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create Thematic Break</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addImage}>
             <Image />
           </Button>
@@ -287,7 +287,7 @@ export const EditorToolbar = () => {
         <TooltipContent side={"right"}>Create image block</TooltipContent>
       </Tooltip>
       <Tooltip>
-        <TooltipTrigger>
+        <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addHtml}>
             {"html"}
           </Button>

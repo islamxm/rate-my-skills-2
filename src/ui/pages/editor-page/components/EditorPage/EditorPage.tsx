@@ -11,7 +11,7 @@ export const EditorPage = () => {
         <EditorToolbar />
         <div className={"p-5 gap-3 flex-1 flex hatching"}>
           <Canvas />
-          <CanvasMap/>
+          {/* <CanvasMap/> */}
         </div>
       </div>
 
