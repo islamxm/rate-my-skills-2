@@ -82,8 +82,8 @@ export interface MOMThematicBreak extends MOMNode {
 export interface MOMListItemGfm extends MOMListItem {
   checked?: boolean;
 }
-export interface MOMHtml extends MOMAbstractLiteral {
-  type: "html";
+export interface MOMRaw extends MOMAbstractLiteral {
+  type: "raw";
 }
 
 export type MOMParentNode =
@@ -106,7 +106,7 @@ export type MOMAllContent =
   | MOMText
   | MOMThematicBreak
   | MOMListItemGfm
-  | MOMHtml;
+  | MOMRaw;
 
 export type MOMBlockNode =
   | MOMAlert
@@ -117,7 +117,7 @@ export type MOMBlockNode =
   | MOMImage
   | MOMThematicBreak
   | MOMCode
-  | MOMHtml;
+  | MOMRaw;
 
 export type MOMInlineNode =
   | MOMText

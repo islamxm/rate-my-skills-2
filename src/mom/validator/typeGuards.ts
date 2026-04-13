@@ -31,7 +31,7 @@ export const MOM_TYPE = {
     "blockquote",
     "alert",
     "thematicBreak",
-    "html"
+    "raw"
   ] as Array<MOMBlockNodeType>,
   inline: [
     "listItem",
@@ -84,8 +84,8 @@ export function isAlertNode(node: MOMAllContent) {
 export function isThematicBreak(node: MOMAllContent) {
   return node.type === "thematicBreak";
 }
-export function isHtmlNode(node: MOMAllContent) {
-  return node.type === "html";
+export function isRawNode(node: MOMAllContent) {
+  return node.type === "raw";
 }
 
 export function isValidHtmlElement(element: HTMLElement) {
@@ -112,6 +112,6 @@ export const Guard = {
   isAlertNode,
   isThematicBreak,
   isCodeNode,
-  isHtmlNode,
+  isRawNode,
   isValidHtmlElement
 };

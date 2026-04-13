@@ -112,8 +112,8 @@ export const EditorToolbar = () => {
     selectAndFocusNode(node.id);
   };
 
-  const addHtml = () => {
-    const node = MOM.Engine.createHtml();
+  const addRaw = () => {
+    const node = MOM.Engine.createRaw();
     insertNode({
       node,
       parentId: null,
@@ -286,11 +286,11 @@ export const EditorToolbar = () => {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant={"secondary"} size={"icon"} onClick={addHtml}>
-            {"html"}
+          <Button variant={"secondary"} size={"icon"} onClick={addRaw}>
+            {"raw"}
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={"right"}>Create HTML</TooltipContent>
+        <TooltipContent side={"right"}>Create Raw</TooltipContent>
       </Tooltip>
     </div>
   );

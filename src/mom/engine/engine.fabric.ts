@@ -5,7 +5,7 @@ import type {
   MOMBlockquote,
   MOMCode,
   MOMHeading,
-  MOMHtml,
+  MOMRaw,
   MOMImage,
   MOMInlineCode,
   MOMList,
@@ -139,13 +139,13 @@ export function createInlineCode(
   };
 }
 
-export function createHtml(
+export function createRaw(
   value: string = "",
   parentId: string | null = null,
-): MOMHtml {
+): MOMRaw {
   return {
     ...base(parentId),
-    type: "html",
+    type: "raw",
     value
   }
 }

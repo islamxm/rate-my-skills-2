@@ -9,6 +9,6 @@ export { useListEditor } from "./useListEditor";
 export { useCursor } from "./useCursor";
 export { useUI } from "./useUI";
 export { useImage } from "./useImage";
-export { useHtml } from "./useHtml";
+export { useRaw } from "./useRaw";
 export { useDocumentShortcuts } from "./useDocumentShortcuts";
 export { useEvent } from "./useEvent";

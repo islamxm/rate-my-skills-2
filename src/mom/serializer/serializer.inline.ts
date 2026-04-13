@@ -1,10 +1,12 @@
 import { getChildrenNodes } from "../selector/selectors";
 import type { MOMAllContent, MOMMap } from "../types";
 
+/** @deprecated */
 export function renderToHTML(nodes: Array<MOMAllContent>, allNodes: MOMMap) {
   return nodes.map((node) => renderNodeToHTML(node, allNodes)).join("");
 }
 
+/** @deprecated */
 export function renderNodeToHTML(
   node: MOMAllContent,
   allNodes: MOMMap,
@@ -30,7 +32,7 @@ export function renderNodeToHTML(
       return "";
   }
 }
-
+/** @deprecated */
 function escapeHTML(str: string) {
   return str
     .replace(/&/g, "&amp;")
@@ -38,4 +40,3 @@ function escapeHTML(str: string) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
-

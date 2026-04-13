@@ -1,7 +1,7 @@
 import { type FC } from "react";
-import { useHtml, useNode } from "../../hooks";
+import { useRaw, useNode } from "../../hooks";
 import { MOM } from "../../mom";
-import type { MOMHtml } from "../../mom/types";
+import type { MOMRaw } from "../../mom/types";
 import { AppWindowIcon, CodeIcon } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "../shared";
 import Textarea from "react-textarea-autosize";
@@ -18,11 +18,11 @@ type Props = {
   nodeId: string;
 };
 
-export const HtmlNode: FC<Props> = ({ nodeId }) => {
+export const RawNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
-  const { ref, fieldProps, tabProps } = useHtml(node as MOMHtml);
+  const { ref, fieldProps, tabProps } = useRaw(node as MOMRaw);
 
-  const isValidNode = MOM.Guard.isHtmlNode(node);
+  const isValidNode = MOM.Guard.isRawNode(node);
 
   if (!isValidNode) return null;
 

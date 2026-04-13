@@ -4,3 +4,6 @@ export { ListNode } from "./ListNode";
 export { ParagraphNode } from "./ParagraphNode";
 export { HeadingNode } from "./HeadingNode";
 export { ThematicBreakNode } from "./ThematicBreakNode";
+export { RawNode } from "./RawNode";
+export { BlockquoteNode } from "./BlockquoteNode";
+export { AlertNode } from "./AlertNode";

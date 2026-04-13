@@ -7,19 +7,16 @@ import {
   HeadingNode,
   CodeNode,
   ImageNode,
+  RawNode,
+  BlockquoteNode,
+  AlertNode,
 } from "./blocks";
-import { AlertNode } from "./blocks/AlertNode";
-import { BlockquoteNode } from "./blocks/BlockquoteNode";
-import { HtmlNode } from "./blocks/HtmlNode";
 
 /** Основная функци рендерер */
 export function renderer(node: MOMAllContent) {
   if (MOM.Guard.isBlockNode(node)) {
     return renderBlock(node);
   }
-  // if (MOM.Guard.isInlineNode(node)) {
-  //   return renderInline(node);
-  // }
   return null;
 }
 
@@ -40,27 +37,11 @@ function renderBlock(node: MOMBlockNode) {
       return <CodeNode nodeId={node.id} />;
     case "image":
       return <ImageNode nodeId={node.id} />;
-    case "html":
-      return <HtmlNode nodeId={node.id} />;
+    case "raw":
+      return <RawNode nodeId={node.id} />;
     case "thematicBreak":
       return <ThematicBreakNode nodeId={node.id} />;
     default:
       return null;
   }
 }
-
-// /** Функция для рендера составных частей топ-левел блоков */
-// function renderInline(node: MOMInlineNode) {
-//   switch (node.type) {
-//     case "listItem":
-//       return <ListItemNode nodeId={node.id} />;
-//     case "paragraph":
-//       return <ParagraphNode nodeId={node.id} />;
-//     case "text":
-//       return <TextNode nodeId={node.id} />;
-//     case "inlineCode":
-//       return null;
-//     default:
-//       return null;
-//   }
-// }

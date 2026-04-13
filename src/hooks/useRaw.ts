@@ -1,4 +1,4 @@
-import type { MOMHtml } from "@/mom/types";
+import type { MOMRaw } from "@/mom/types";
 import { useEffect, useRef, useState } from "react";
 import { useDocumentActions } from "./useDocumentActions";
 import type { TextareaAutosizeProps } from "react-textarea-autosize";
@@ -7,7 +7,7 @@ import type { Tabs } from "radix-ui";
 
 type ViewType = "preview" | "raw";
 
-export function useHtml(node: MOMHtml) {
+export function useRaw(node: MOMRaw) {
   const { updateNode } = useDocumentActions();
   const { isFocused } = useNodeSelection(node.id);
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -19,12 +19,12 @@ export function useHtml(node: MOMHtml) {
   };
 
   const save = () => {
-    updateNode<MOMHtml>({
+    updateNode<MOMRaw>({
       nodeId: node.id,
       patch: {
         id: node.id,
         value,
-        type: "html",
+        type: "raw",
         parentId: node.parentId,
       },
     });
