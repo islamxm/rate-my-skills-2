@@ -54,7 +54,7 @@ export function useEditor<T extends HTMLElement>(
     if (isFocused) {
       restoreCursor();
     }
-  }, [children, isFocused, parseType]);
+  }, [children, isFocused, parseType, node.id, restoreCursor]);
 
   /** сохранение результата редактирования (данные беруться из dom) */
   const save = () => {

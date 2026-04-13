@@ -91,6 +91,7 @@ export const LinkTooltip: FC<Props> = ({ containerRef, addUrl }) => {
 
   const onKeyDownEnter = (e: React.KeyboardEvent) => {
     if (e.code === "Enter") {
+      e.stopPropagation();
       e.preventDefault();
       onSave();
       close();
