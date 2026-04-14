@@ -1,4 +1,4 @@
-import { useRef, type FC, type JSX } from "react";
+import { useRef, type FC } from "react";
 import { useChildren, useNode } from "../../hooks";
 import { MOM } from "../../mom";
 import { ListItemNode } from "../inlines";

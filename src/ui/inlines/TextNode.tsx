@@ -4,6 +4,7 @@ import { MOM } from "../../mom";
 
 type Props = { nodeId: string };
 
+/** @deprecated */
 export const TextNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
   const isValidNode = MOM.Guard.isTextNode(node);

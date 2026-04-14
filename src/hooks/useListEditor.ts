@@ -7,6 +7,8 @@ import { useDocumentActions } from "./useDocumentActions";
 import { useSelectionActions } from "./useSelectionActions";
 import { useNodeSelection } from "./useNodeSelection";
 
+// рассмотреть в будущем фиксирования focusedId конкретного li в сторе для предсказуемого управления кареткой
+
 export function useListEditor(
   nodeId: string,
   listNodeId: string,
@@ -17,9 +19,8 @@ export function useListEditor(
   focusItem?: any,
 ) {
   const parentChildren = useChildren(listNodeId);
-  // const listNode = useNode(listNodeId);
   const { commitInlineEdit, insertNode } = useDocumentActions();
-  const { focuseNode } = useSelectionActions();
+  const { focuseNode, blur } = useSelectionActions();
   const { isFocused } = useNodeSelection(listNodeId);
   const ref = useRef<HTMLLIElement>(null);
   const { saveCursor, restoreCursor } = useCursor<HTMLLIElement>(ref);
@@ -27,11 +28,16 @@ export function useListEditor(
 
   useEffect(() => {
     if (!ref.current) return;
+
     const html =
       currentHtml.current ?? MOM.Serializer.momToHTML(children, nodeId);
-    ref.current.innerHTML = html;
     currentHtml.current = undefined;
-  }, [children, nodeId]);
+    if (ref.current.innerHTML === html) return;
+    ref.current.innerHTML = html;
+    if (isFocused) {
+      restoreCursor();
+    }
+  }, [children, nodeId, restoreCursor, isFocused]);
 
   const save = () => {
     if (!ref.current) return;
@@ -43,6 +49,7 @@ export function useListEditor(
   /** при отключении фокуса предварительно сохраняем результат*/
   const onBlur = () => {
     save();
+    blur();
     if (ref.current) {
       ref.current.blur();
     }
@@ -60,7 +67,6 @@ export function useListEditor(
     if (!result) return;
     currentHtml.current = undefined;
     commitInlineEdit({ nodeId, nodes: result.nodes });
-    restoreCursor();
   };
 
   /** чистим от форматирования вставляемый текст */

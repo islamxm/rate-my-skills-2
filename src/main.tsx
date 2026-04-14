@@ -5,7 +5,7 @@ import './styles/shadcn.css'
 import './styles/main.scss';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <App />
-  </StrictMode>,
+  // </StrictMode>,
 )

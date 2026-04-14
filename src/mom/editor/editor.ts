@@ -385,7 +385,6 @@ export function restoreCursor(
   }
 
   if (!targetNode) return;
-
   const range = document.createRange();
   range.setStart(targetNode, targetOffset);
   range.collapse(true);

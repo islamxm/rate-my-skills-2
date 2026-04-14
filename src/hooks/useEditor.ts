@@ -28,7 +28,7 @@ export function useEditor<T extends HTMLElement>(
 ) {
   const children = useChildren(node.id);
   const { focuseNode, blur } = useSelectionActions();
-  const { isSelected, isFocused } = useNodeSelection(node.id);
+  const { isFocused } = useNodeSelection(node.id);
   const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
@@ -46,12 +46,14 @@ export function useEditor<T extends HTMLElement>(
     if (ref.current.innerHTML === html) return;
     ref.current.innerHTML = html;
     currentHtml.current = undefined;
-  }, [children, parseType, node.id]);
+    if (isFocused) {
+      restoreCursor();
+    }
+  }, [children, parseType, node.id, restoreCursor, isFocused]);
 
   useEffect(() => {
     if (isFocused) {
       ref.current?.focus();
-      restoreCursor();
     }
   }, [isFocused, restoreCursor]);
 
@@ -119,7 +121,7 @@ export function useEditor<T extends HTMLElement>(
     if (!result) return;
     currentHtml.current = undefined;
     commitInlineEdit({ nodeId: node.id, nodes: result.nodes });
-    restoreCursor();
+    // restoreCursor();
   };
 
   /** очистка от браузерного мусора при каждом вводе и сохранение актуального состояния DOM в рефе */
