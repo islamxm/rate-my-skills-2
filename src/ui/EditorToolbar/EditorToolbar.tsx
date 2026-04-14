@@ -30,6 +30,7 @@ import {
   MessageSquareWarning,
   TriangleAlert,
   OctagonAlert,
+  Braces,
 } from "lucide-react";
 import { useSelectionActions } from "@/hooks/useSelectionActions";
 
@@ -211,35 +212,35 @@ export const EditorToolbar = () => {
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create Quote</TooltipContent>
       </Tooltip>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Tooltip>
-            <TooltipTrigger asChild>
+      <Tooltip>
+        <DropdownMenu>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
               <Button variant={"secondary"} size={"icon"}>
                 <AlertCircle />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side={"right"}>Create Alert</TooltipContent>
-          </Tooltip>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent side={"right"}>
-          <DropdownMenuItem onClick={() => addAlert("note")}>
-            <Info color="#0969da" /> Note
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addAlert("tip")}>
-            <Lightbulb color="#1a7f37" /> Tip
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addAlert("important")}>
-            <MessageSquareWarning color="#8250df" /> Important
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addAlert("warning")}>
-            <TriangleAlert color="#9a6700" /> Warning
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => addAlert("caution")}>
-            <OctagonAlert color="#cf222e" /> Caution
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent side={"right"}>Create Alert</TooltipContent>
+          <DropdownMenuContent side={"right"}>
+            <DropdownMenuItem onClick={() => addAlert("note")}>
+              <Info color="#0969da" /> Note
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addAlert("tip")}>
+              <Lightbulb color="#1a7f37" /> Tip
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addAlert("important")}>
+              <MessageSquareWarning color="#8250df" /> Important
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addAlert("warning")}>
+              <TriangleAlert color="#9a6700" /> Warning
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => addAlert("caution")}>
+              <OctagonAlert color="#cf222e" /> Caution
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addCode}>
@@ -282,15 +283,15 @@ export const EditorToolbar = () => {
             <Image />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={"right"}>Create image block</TooltipContent>
+        <TooltipContent side={"right"}>Create Image block</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant={"secondary"} size={"icon"} onClick={addRaw}>
-            {"raw"}
+            <Braces />
           </Button>
         </TooltipTrigger>
-        <TooltipContent side={"right"}>Create Raw</TooltipContent>
+        <TooltipContent side={"right"}>Create Raw block</TooltipContent>
       </Tooltip>
     </div>
   );
