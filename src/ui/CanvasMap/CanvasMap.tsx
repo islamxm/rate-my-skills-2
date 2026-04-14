@@ -1,24 +1,67 @@
 import { useDocument, useNode } from "@/hooks";
-import type { MOMBlockNodeType } from "@/mom/types";
+import type { MOMAllContent, MOMBlockNodeType } from "@/mom/types";
 import { getBlockColors } from "../tokens";
 import { motion } from "motion/react";
+import { useSelectionActions } from "@/hooks/useSelectionActions";
+import clsx from "clsx";
+import { useRef } from "react";
+
+const getValueForBlockVisualHeight = (node: MOMAllContent) => {
+  const id = node.id;
+  if ("value" in node) {
+    return node.value.length;
+  }
+  const element = document.querySelector(`[data-id="${id}"]`);
+  if (!element) return 0;
+  return element.textContent.length;
+};
 
 //потом можно сделать так чтобы имел высоту в зависимости от контента чтобы визуально можно было понять размер блока
 const Block = ({ nodeId }: { nodeId: string }) => {
   const node = useNode(nodeId);
-  const { text, border } = getBlockColors(node.type as MOMBlockNodeType);
+  const { selectNode } = useSelectionActions();
+  const { text, border, bg } = getBlockColors(node.type as MOMBlockNodeType);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const height = 30 + getValueForBlockVisualHeight(node) * 0.2;
+
+  const scrollToElement = () => {
+    if(!ref.current) return;
+    const element = document.querySelector(`[data-id="${nodeId}"]`);
+    selectNode(nodeId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+      ref.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+    }
+  };
 
   return (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       layout
-      className="h-[30px] w-full rounded-md p-2 flex justify-start items-center text-xs"
+      className={clsx(
+        "w-full rounded-md p-2 flex justify-start items-center text-xs cursor-pointer flex-none",
+      )}
       style={{
         backgroundColor: border,
-        border: `1px solid ${text}`,
         color: text,
+        height,
       }}
+      whileHover={{
+        backgroundColor: text,
+        color: bg,
+      }}
+      onClick={scrollToElement}
     >
       {node.type}
     </motion.div>
