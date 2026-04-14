@@ -1,7 +1,6 @@
 import { useRef, type HTMLProps, useEffect } from "react";
 import { MOM } from "../mom";
 import type { MOMAllContent, MOMTextMarks } from "../mom/types";
-import { useChildren } from "./useChildren";
 import { useCursor } from "./useCursor";
 import { useDocumentActions } from "./useDocumentActions";
 import { useSelectionActions } from "./useSelectionActions";

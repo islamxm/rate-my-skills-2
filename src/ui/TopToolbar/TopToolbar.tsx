@@ -44,7 +44,7 @@ export const TopToolbar = () => {
     <div className="border-bottom border-b flex gap-2">
       <a
         href="#"
-        className="w-[53px] hatching border-r logo flex justify-center items-center"
+        className="w-[53px] hatching border-r logo flex justify-center items-center flex-none"
       >
         <img src={logo} width={40} height={40} alt="Readgen" className="flex" />
       </a>
