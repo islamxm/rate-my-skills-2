@@ -122,8 +122,7 @@ export function useListEditor(
     }
     if (e.code === "Enter" && e.shiftKey) {
       e.preventDefault();
-      // createItem();
-      createNewListItem();
+      createItem();
       return;
     }
     if (e.code === "Backspace") {
@@ -140,19 +139,11 @@ export function useListEditor(
     }
   };
 
-  const createNewListItem = () => {
-    insertNode({
-      node: MOM.Engine.createListItem(listNodeId),
-      parentId: listNodeId,
-    })
-  }
-
   useEffect(() => {
-    if (isFocused) {
+    if (isFocused && index === 0) {
       ref.current?.focus();
-      restoreCursor();
     }
-  }, [isFocused, restoreCursor]);
+  }, [index, isFocused]);
 
   const editorProps: HTMLProps<HTMLLIElement> = {
     contentEditable: true,

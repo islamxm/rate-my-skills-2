@@ -13,15 +13,14 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
   const children = useChildren(nodeId);
   const isValidNode = MOM.Guard.isListNode(node);
-  const listRef = useRef<HTMLUListElement>(null);
+  const listRef = useRef<HTMLOListElement & HTMLUListElement>(null);
 
   if (!isValidNode) return null;
 
   const isOrdered = node.ordered;
 
-  const Tag = isOrdered ? "ol" : ("ul" as keyof JSX.IntrinsicElements["ul"]);
+  const Tag = isOrdered ? "ol" : "ul";
 
-  // рассмотреть вариант нормализации и переноса логики в сам listItem
   const focusItem = (index: number) => {
     if (!listRef.current) return;
     const children = listRef.current.children;
@@ -45,7 +44,7 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
       parentId: nodeId,
       index: index + 1,
     });
-    // requestAnimationFrame(() => focusItem(index + 1));
+    requestAnimationFrame(() => focusItem(index + 1));
   };
 
   const deleteItem = (id: string, index: number) => {
@@ -58,7 +57,6 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
   };
 
   return (
-    // @ts-ignore
     <Tag
       ref={listRef}
       data-id={node.id}
