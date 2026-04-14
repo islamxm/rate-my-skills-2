@@ -9,7 +9,7 @@ export function domToMom(
 ) {
   if (!element) return [];
   const result: Array<MOMAllContent> = [];
-  const parentId = element?.getAttribute("data-id");
+  const parentId = element?.dataset.id ?? null;
   const children = element.childNodes;
   const unnecessaryNodesForRemove: Array<ChildNode> = [];
 
@@ -43,7 +43,7 @@ export function domToMom(
 function parseSpanToMOM(element: HTMLElement, parentId: string | null) {
   const id = momDataOfElement(element).id || nanoid();
   const value = element.textContent || "";
-  const url = element.getAttribute("data-url");
+  const url = element.dataset.url;
 
   const marks: MOMText["marks"] = {
     bold: element.dataset.bold === "true",
@@ -68,10 +68,10 @@ function parseSpanToMOM(element: HTMLElement, parentId: string | null) {
 }
 
 /** нужно использовать во всех местах где получаем доступ к общим метаданным связанным с MOM */
-function momDataOfElement(element: Element) {
-  const id = element.getAttribute("data-id") as string;
-  const type = element.getAttribute("data-type") as MOMNodeType;
-  const parentId = element.getAttribute("data-parent-id");
+function momDataOfElement(element: HTMLElement) {
+  const id = element.dataset.id as string;
+  const type = element.dataset.type as MOMNodeType;
+  const parentId = element.dataset.parentId;
 
   return { id, type, parentId };
 }

@@ -89,7 +89,7 @@ export function isRawNode(node: MOMAllContent) {
 }
 
 export function isValidHtmlElement(element: HTMLElement) {
-  return element.hasAttribute("data-id");
+  return !!element.dataset.id;
 }
 
 export const Guard = {

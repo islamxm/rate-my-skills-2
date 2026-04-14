@@ -1,7 +1,6 @@
 import { useEffect, useRef, type HTMLProps } from "react";
 import { MOM } from "../mom";
 import type { MOMAllContent, MOMTextMarks } from "../mom/types";
-import { useHistory } from "./useHistory";
 import { useCursor } from "./useCursor";
 import { useDocumentActions } from "./useDocumentActions";
 import { useChildren } from "./useChildren";
@@ -29,36 +28,39 @@ export function useEditor<T extends HTMLElement>(
 ) {
   const children = useChildren(node.id);
   const { focuseNode, blur } = useSelectionActions();
-  const { isSelected, isFocused, isOnlySelected } = useNodeSelection(node.id);
+  const { isSelected, isFocused } = useNodeSelection(node.id);
   const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
 
-  /** для того чтобы нормально вставлять html в зависимости от измененного стейта (отбираем контроль у реакта) */
+  const currentHtml = useRef<string>(undefined);
+
+  /** для того чтобы нормально вставлять html в зависимости от измененного стейта */
   useEffect(() => {
     if (!ref.current) return;
     let html: string = "";
-
     if (parseType === "deep") {
-      html = MOM.Serializer.momToHTML(children, node.id);
-      if (children.length === 0) {
-        const mom = MOM.Parser.domToMom(ref.current);
-        html = MOM.Serializer.momToHTML(mom, node.id);
-      }
+      html = currentHtml.current ?? MOM.Serializer.momToHTML(children, node.id);
     }
     if (parseType === "plain") {
       html = ref.current.textContent;
     }
+    if (ref.current.innerHTML === html) return;
     ref.current.innerHTML = html;
+    currentHtml.current = undefined;
+  }, [children, parseType, node.id]);
 
+  useEffect(() => {
     if (isFocused) {
+      ref.current?.focus();
       restoreCursor();
     }
-  }, [children, isFocused, parseType, node.id, restoreCursor]);
+  }, [isFocused, restoreCursor]);
 
   /** сохранение результата редактирования (данные беруться из dom) */
   const save = () => {
     if (!ref.current) return;
+    currentHtml.current = undefined;
     if (parseType === "plain") {
       updateNode({
         nodeId: node.id,
@@ -72,22 +74,16 @@ export function useEditor<T extends HTMLElement>(
     }
   };
 
-  /** при отключении фокуса предварительно сохраняем результат и сбрасываем выделение (надо пересмотреть когда вернемся к множественному выделению блоков - группировка) */
+  /** при отключении фокуса предварительно сохраняем результат*/
   const onBlur = () => {
     save();
     blur();
   };
 
-  /** при клике на блок гарантированно фиксируем в сторе (дефолтный клик)*/
+  /** при клике на блок гарантированно фиксируем в сторе*/
   const onSelectBlock = () => {
     focuseNode(node.id);
   };
-
-  useEffect(() => {
-    if (isFocused) {
-      ref.current?.focus();
-    }
-  }, [isFocused]);
 
   /** обработка действий которые идут через клавишу */
   const onKeyboardEvent = (e: React.KeyboardEvent) => {
@@ -121,10 +117,11 @@ export function useEditor<T extends HTMLElement>(
   const applyFormat = (format: keyof MOMTextMarks) => {
     if (!ref.current || disableFormatting) return;
     saveCursor();
-
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
+    currentHtml.current = undefined;
     commitInlineEdit({ nodeId: node.id, nodes: result.nodes });
+    restoreCursor();
   };
 
   /** очистка от браузерного мусора при каждом вводе */
@@ -138,6 +135,7 @@ export function useEditor<T extends HTMLElement>(
     if (target.textContent === "") {
       target.innerHTML = "";
     }
+    currentHtml.current = ref.current.innerHTML;
   };
 
   /** сброс браузерных стилей перед вводом */
@@ -145,6 +143,10 @@ export function useEditor<T extends HTMLElement>(
     if (e.inputType && e.inputType.startsWith("format")) {
       e.preventDefault();
     }
+  };
+
+  const onFocus = () => {
+    focuseNode(node.id);
   };
 
   /** обработка события beforeinput (оказывается реакт не имплементирует его - onBeforeInput что то другое) */
@@ -163,6 +165,7 @@ export function useEditor<T extends HTMLElement>(
     onClick: onSelectBlock,
     onBlur,
     onKeyDown: onKeyboardEvent,
+    onFocus,
     onPaste,
     onInput,
     tabIndex: -1,
