@@ -32,10 +32,8 @@ export function useEditor<T extends HTMLElement>(
   const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
-
   const currentHtml = useRef<string>(undefined);
 
-  /** для того чтобы нормально вставлять html в зависимости от измененного стейта */
   useEffect(() => {
     if (!ref.current) return;
     let html: string = "";
@@ -124,7 +122,7 @@ export function useEditor<T extends HTMLElement>(
     restoreCursor();
   };
 
-  /** очистка от браузерного мусора при каждом вводе */
+  /** очистка от браузерного мусора при каждом вводе и сохранение актуального состояния DOM в рефе */
   // надо подумать про перформанс
   const onInput = (e: React.FormEvent) => {
     if (!ref.current) return;

@@ -1,7 +1,6 @@
-import { useEffect, type FC } from "react";
-import { useChildren, useEditor, useListEditor, useNode } from "../../hooks";
+import { type FC } from "react";
+import { useChildren, useListEditor, useNode } from "../../hooks";
 import { MOM } from "../../mom";
-import { renderer } from "../renderer";
 import { FormatToolbar } from "../FormatToolbar/FormatToolbar";
 
 type Props = {
@@ -45,7 +44,6 @@ export const ListItemNode: FC<Props> = ({
         data-id={node.id}
         data-type={node.type}
         data-parent-id={node.parentId ?? ""}
-        // className="border border-dashed border-sky-400"
       />
     </>
   );

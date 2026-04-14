@@ -412,20 +412,8 @@ export function getCssClassByNode(node: MOMAllContent) {
   if (node.type === "blockquote") {
     return "blockquote";
   }
-  if (node.type === "alert" && node.variant === "caution") {
-    return `markdown-alert-wrapper markdown-alert-caution`;
-  }
-  if (node.type === "alert" && node.variant === "important") {
-    return `markdown-alert-wrapper markdown-alert-important`;
-  }
-  if (node.type === "alert" && node.variant === "note") {
-    return `markdown-alert-wrapper markdown-alert-note`;
-  }
-  if (node.type === "alert" && node.variant === "tip") {
-    return `markdown-alert-wrapper markdown-alert-tip`;
-  }
-  if (node.type === "alert" && node.variant === "warning") {
-    return `markdown-alert-wrapper markdown-alert-warning`;
+  if (node.type === "alert") {
+    return `markdown-alert-wrapper ${alertVariantGfmCssClasses[node.variant]}`;
   }
   if (node.type === "list" && node.ordered) {
     return "ol";

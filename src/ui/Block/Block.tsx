@@ -68,6 +68,7 @@ export const Block: FC<Props> = ({ nodeId }) => {
             className={clsx(
               `rounded-sm border border-solid w-full outline-[4px]`,
               !blockHighlighting && classes.highlight_disabled,
+              isSelected && classes.selected
             )}
             style={
               blockHighlighting
@@ -77,7 +78,7 @@ export const Block: FC<Props> = ({ nodeId }) => {
                     borderStyle: "solid",
                     outlineColor: isSelected ? border : "transparent",
                   }
-                : { outline: `1px dashed ${text}`, border: "none" }
+                : { outline: `1px dashed ${text}`, border: "none"}
             }
           >
             {renderer(node)}

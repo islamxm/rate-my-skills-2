@@ -18,34 +18,37 @@ export function useListEditor(
 ) {
   const parentChildren = useChildren(listNodeId);
   // const listNode = useNode(listNodeId);
-  const { commitInlineEdit } = useDocumentActions();
+  const { commitInlineEdit, insertNode } = useDocumentActions();
   const { focuseNode } = useSelectionActions();
   const { isFocused } = useNodeSelection(listNodeId);
   const ref = useRef<HTMLLIElement>(null);
   const { saveCursor, restoreCursor } = useCursor<HTMLLIElement>(ref);
+  const currentHtml = useRef<string>(undefined);
 
-  /** берем управление DOM в свои руки чтобы не было ошибки c [React]removeChildren() */
   useEffect(() => {
     if (!ref.current) return;
-    const html = MOM.Serializer.momToHTML(children, nodeId);
+    const html =
+      currentHtml.current ?? MOM.Serializer.momToHTML(children, nodeId);
     ref.current.innerHTML = html;
-  }, [children]);
+    currentHtml.current = undefined;
+  }, [children, nodeId]);
 
-  const onSave = () => {
+  const save = () => {
     if (!ref.current) return;
-    // cursorRef.current = saveCursor(ref.current);
+    currentHtml.current = undefined;
     const nodes = MOM.Parser.domToMom(ref.current);
     commitInlineEdit({ nodeId, nodes });
   };
 
+  /** при отключении фокуса предварительно сохраняем результат*/
   const onBlur = () => {
-    onSave();
-    // когда окно приложение скрывается нужно вручную сделать blur() чтобы отменить каректку из contenteditable
+    save();
     if (ref.current) {
       ref.current.blur();
     }
   };
 
+  /** при клике на блок гарантированно фиксируем в сторе*/
   const onSelectBlock = () => {
     focuseNode(listNodeId);
   };
@@ -55,7 +58,9 @@ export function useListEditor(
     saveCursor();
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
+    currentHtml.current = undefined;
     commitInlineEdit({ nodeId, nodes: result.nodes });
+    restoreCursor();
   };
 
   /** чистим от форматирования вставляемый текст */
@@ -63,10 +68,10 @@ export function useListEditor(
     e.preventDefault();
     const text = e.clipboardData.getData("text/plain");
     document.execCommand("insertText", false, text);
-    onSave();
+    save();
   };
 
-  /** очистка от браузерного мусора при каждом вводе */
+  /** очистка от браузерного мусора при каждом вводе и сохранение актуального состояния DOM в рефе */
   // надо подумать про перформанс
   const onInput = (e: React.FormEvent) => {
     if (!ref.current) return;
@@ -77,6 +82,7 @@ export function useListEditor(
     if (target.textContent === "") {
       target.innerHTML = "";
     }
+    currentHtml.current = ref.current.innerHTML;
   };
 
   /** сброс браузерных стилей перед вводом */
@@ -96,7 +102,7 @@ export function useListEditor(
     };
   }, []);
 
-  const onKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
+  const onKeyboardEvent = (e: React.KeyboardEvent<HTMLLIElement>) => {
     if (e.ctrlKey || e.metaKey) {
       switch (e.code) {
         case "KeyU":
@@ -116,7 +122,8 @@ export function useListEditor(
     }
     if (e.code === "Enter" && e.shiftKey) {
       e.preventDefault();
-      createItem();
+      // createItem();
+      createNewListItem();
       return;
     }
     if (e.code === "Backspace") {
@@ -133,23 +140,30 @@ export function useListEditor(
     }
   };
 
+  const createNewListItem = () => {
+    insertNode({
+      node: MOM.Engine.createListItem(listNodeId),
+      parentId: listNodeId,
+    })
+  }
+
   useEffect(() => {
     if (isFocused) {
-      console.log(isFocused);
       ref.current?.focus();
+      restoreCursor();
     }
-  }, [isFocused]);
+  }, [isFocused, restoreCursor]);
 
   const editorProps: HTMLProps<HTMLLIElement> = {
     contentEditable: true,
     suppressContentEditableWarning: true,
     onBlur,
-    onKeyDown,
+    onKeyDown: onKeyboardEvent,
     onInput,
     onClick: onSelectBlock,
     tabIndex: -1,
     spellCheck: false,
-    onPaste
+    onPaste,
   };
 
   return {

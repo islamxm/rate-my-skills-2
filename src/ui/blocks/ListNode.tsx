@@ -13,7 +13,6 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
   const children = useChildren(nodeId);
   const isValidNode = MOM.Guard.isListNode(node);
-  // const itemsRef = useRef<Map<string, HTMLLIElement>>(new Map());
   const listRef = useRef<HTMLUListElement>(null);
 
   if (!isValidNode) return null;
@@ -46,7 +45,7 @@ export const ListNode: FC<Props> = ({ nodeId }) => {
       parentId: nodeId,
       index: index + 1,
     });
-    requestAnimationFrame(() => focusItem(index + 1));
+    // requestAnimationFrame(() => focusItem(index + 1));
   };
 
   const deleteItem = (id: string, index: number) => {

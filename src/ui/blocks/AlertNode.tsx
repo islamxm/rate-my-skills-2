@@ -20,7 +20,7 @@ const alertVariantOptions: Record<
     classes: "markdown-alert-note",
     title: (
       <>
-        <Info size={16} className="markdown-alert-icon" /> Info
+        <Info size={16} className="markdown-alert-icon" /> Note
       </>
     ),
   },
