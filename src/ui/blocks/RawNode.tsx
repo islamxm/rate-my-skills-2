@@ -33,7 +33,7 @@ export const RawNode: FC<Props> = ({ nodeId }) => {
       data-parent-id={node.parentId ?? ""}
       className="block-node p-[5px]"
     >
-      <div className="flex gap-2 justify-between">
+      <div className="flex gap-2 justify-between mb-[5px]">
         <Tabs {...tabProps}>
           <TabsList className={`bg-[#B8E6EC] rounded-sm`}>
             <TabsTrigger
