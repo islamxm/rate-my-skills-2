@@ -74,12 +74,6 @@ export const TopToolbar = () => {
                   <MenubarItem disabled>
                     <Save /> Save
                   </MenubarItem>
-                  <MenubarItem disabled>
-                    <LayoutTemplate /> Save as template
-                  </MenubarItem>
-                  <MenubarItem disabled>
-                    <Settings /> Settings
-                  </MenubarItem>
                   <MenubarSeparator />
                   <MenubarItem onClick={clearDocument} variant={"destructive"}>
                     <BrushCleaning /> Clear
@@ -107,31 +101,11 @@ export const TopToolbar = () => {
                   <MenubarItem disabled>
                     <BrushCleaning /> Clear all
                   </MenubarItem>
-                  <MenubarItem disabled>
-                    <Group /> Group all
-                  </MenubarItem>
-                  <MenubarItem disabled>
-                    <Ungroup /> Ungroup all
-                  </MenubarItem>
-                </MenubarContent>
-              </MenubarMenu>
-              <MenubarMenu>
-                <MenubarTrigger>Export</MenubarTrigger>
-                <MenubarContent>
-                  <MenubarItem disabled>
-                    <FileJson /> JSON
-                  </MenubarItem>
-                  <MenubarItem disabled>
-                    <File /> Markdown
-                  </MenubarItem>
                 </MenubarContent>
               </MenubarMenu>
               <MenubarMenu>
                 <MenubarTrigger>Help</MenubarTrigger>
                 <MenubarContent>
-                  <MenubarItem>
-                    <BookMarked /> Instructions
-                  </MenubarItem>
                   <MenubarItem>
                     <Keyboard /> Shortcuts
                   </MenubarItem>
