@@ -6,6 +6,7 @@ export function useExportMarkdown() {
 
   const exportMarkdown = () => {
     const resultMarkdownString = MOM.Serializer.momToMarkdown(rootOrder, nodes);
+    if (!resultMarkdownString) return;
     const blob = new Blob([resultMarkdownString], {
       type: "text/markdown;charset=utf-8",
     });
