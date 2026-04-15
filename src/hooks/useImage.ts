@@ -1,5 +1,5 @@
 import type { MOMImage } from "@/mom/types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDocumentActions } from "./useDocumentActions";
 import { toast } from "sonner";
 
@@ -46,7 +46,6 @@ export function useImage(node: MOMImage) {
     setVariant(variant);
   };
 
-  // сохранение результата
   const save = () => {
     if (!url) return;
     if (!isValidUrl(url)) {
@@ -75,7 +74,7 @@ export function useImage(node: MOMImage) {
         url,
       },
     });
-    toast.success("Meta info saved")
+    toast.success("Meta info saved");
   };
 
   const clearMeta = () => {

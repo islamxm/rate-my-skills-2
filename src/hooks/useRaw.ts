@@ -4,6 +4,7 @@ import { useDocumentActions } from "./useDocumentActions";
 import type { TextareaAutosizeProps } from "react-textarea-autosize";
 import { useNodeSelection } from "./useNodeSelection";
 import type { Tabs } from "radix-ui";
+import { MOM } from "@/mom";
 
 type ViewType = "preview" | "raw";
 
@@ -19,6 +20,8 @@ export function useRaw(node: MOMRaw) {
   };
 
   const save = () => {
+    const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(node.value, value);
+    if (canSkipUpdate) return;
     updateNode<MOMRaw>({
       nodeId: node.id,
       patch: {

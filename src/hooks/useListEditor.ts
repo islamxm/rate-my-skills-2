@@ -5,6 +5,9 @@ import { useCursor } from "./useCursor";
 import { useDocumentActions } from "./useDocumentActions";
 import { useSelectionActions } from "./useSelectionActions";
 import { useNodeSelection } from "./useNodeSelection";
+import { GlobalShortcuts, shortcut } from "@/utils/shortcut";
+
+const globalShortcutsList = Object.entries(GlobalShortcuts);
 
 // рассмотреть в будущем фиксирования focusedId конкретного li в сторе для предсказуемого управления кареткой
 
@@ -41,6 +44,11 @@ export function useListEditor(
     if (!ref.current) return;
     currentHtml.current = undefined;
     const nodes = MOM.Parser.domToMom(ref.current);
+    const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
+      MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), nodeId),
+      MOM.Serializer.momToHTML(nodes, nodeId),
+    );
+    if (canSkipUpdate) return;
     commitInlineEdit({ nodeId, nodes });
   };
 
@@ -64,6 +72,12 @@ export function useListEditor(
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
     currentHtml.current = undefined;
+
+    const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
+      MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), nodeId),
+      MOM.Serializer.momToHTML(result.nodes, nodeId),
+    );
+    if (canSkipUpdate) return;
     commitInlineEdit({ nodeId, nodes: result.nodes });
   };
 
@@ -107,40 +121,45 @@ export function useListEditor(
   }, []);
 
   const onKeyboardEvent = (e: React.KeyboardEvent<HTMLLIElement>) => {
-    if (e.ctrlKey || e.metaKey) {
-      switch (e.code) {
-        case "KeyU":
-          e.preventDefault();
-          applyFormat("lineThrough");
-          return;
-        case "KeyI":
-          e.preventDefault();
-          applyFormat("italic");
-          break;
-        case "KeyB":
-          e.preventDefault();
-          applyFormat("bold");
-          break;
-      }
-      return;
-    }
+    shortcut(
+      e.nativeEvent,
+      ["Ctrl", "U"],
+      () => applyFormat("lineThrough"),
+      true,
+    );
+    shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true);
+    shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true);
+    shortcut(
+      e.nativeEvent,
+      ["Backspace"],
+      () => {
+        const isEmpty = !ref.current?.textContent;
+        if (isEmpty) {
+          deleteItem();
+        }
+      },
+      true,
+    );
+
+    // два модификатора без обычной key функция shortcut не поддерживает, надо доработать
     if (e.code === "Enter" && e.shiftKey) {
       e.preventDefault();
       createItem();
       return;
     }
-    if (e.code === "Backspace") {
-      const isEmpty = !ref.current?.textContent;
-      if (isEmpty) {
-        deleteItem();
-      }
-    }
+    // одиночные обычные key тоже не поддерживаются shortcut
     if (e.code === "ArrowUp") {
       focusItem(index - 1);
+      return;
     }
     if (e.code === "ArrowDown") {
       focusItem(index + 1);
+      return;
     }
+
+    globalShortcutsList.forEach(([_, value]) =>
+      shortcut(e.nativeEvent, value, save),
+    );
   };
 
   useEffect(() => {

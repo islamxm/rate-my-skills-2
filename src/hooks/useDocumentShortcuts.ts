@@ -1,4 +1,4 @@
-import { shortcut } from "@/utils/shortcut";
+import { shortcut, GlobalShortcuts } from "@/utils";
 import { useEffect } from "react";
 import { useHistory } from "./useHistory";
 import { useSelectionActions } from "./useSelectionActions";
@@ -12,14 +12,19 @@ export function useDocumentShortcuts() {
   const { createNewBlock, deleteSelectedBlocks } = useDocumentActions();
 
   const onKeyDown = useEvent((e: KeyboardEvent) => {
-    shortcut(e, ["Ctrl", "Shift", "Z"], redo, true);
-    shortcut(e, ["Ctrl", "Shift", "A"], selectAllBlocks, true);
-    shortcut(e, ["Shift", "Ctrl", "Backspace"], deleteSelectedBlocks, true);
-    shortcut(e, ["Ctrl", "Z"], undo, true);
-    shortcut(e, ["Ctrl", "Y"], redo, true);
-    shortcut(e, ["Shift", "Tab"], selectPrevBlock, true);
-    shortcut(e, ["Tab"], selectNextBlock, true);
-    shortcut(e, ["Enter"], createNewBlock, true);
+    shortcut(e, GlobalShortcuts.REDO, redo, true);
+    shortcut(e, GlobalShortcuts.SELECT_ALL_BLOCKS, selectAllBlocks, true);
+    shortcut(
+      e,
+      GlobalShortcuts.DELETE_SELECTED_BLOCKS,
+      deleteSelectedBlocks,
+      true,
+    );
+    shortcut(e, GlobalShortcuts.UNDO, undo, true);
+    shortcut(e, GlobalShortcuts.REDO_LEGACY, redo, true);
+    shortcut(e, GlobalShortcuts.SELECT_PREV_BLOCK, selectPrevBlock, true);
+    shortcut(e, GlobalShortcuts.SELECT_NEXT_BLOCK, selectNextBlock, true);
+    shortcut(e, GlobalShortcuts.CREATE_NEW_BLOCK, createNewBlock, true);
   });
 
   useEffect(() => {

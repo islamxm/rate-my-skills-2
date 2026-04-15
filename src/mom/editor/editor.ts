@@ -429,6 +429,14 @@ export function getCssClassByNode(node: MOMAllContent) {
   return "";
 }
 
+/** функция для проверки возможности пропуска обнолвения стейта, проверяется состояние DOM в строковом виде с состоянием MOM в строковом виде */
+export function shoulSkipUpdateState(prev: string, current: string) {
+  if (prev === current) {
+    return true;
+  }
+  return false;
+}
+
 export const Editor = {
   applyFormat,
   isNothingSelected,
@@ -436,4 +444,5 @@ export const Editor = {
   saveCursor,
   restoreCursor,
   getCssClassByNode,
+  shoulSkipUpdateState
 } as const;

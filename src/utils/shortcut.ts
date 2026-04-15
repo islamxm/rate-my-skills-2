@@ -1,13 +1,18 @@
+type Combination =
+  | readonly [ModCode, ModCode, KeyCode]
+  | readonly [ModCode, KeyCode]
+  | readonly [KeyCode];
+
 /**
  *
  * @param {KeyboardEvent} e - Обьект нативного DOM события keydown
- * @param {[ModCode, ModCode, KeyCode] | [ModCode, KeyCode] | [KeyCode]} combination - Комбинация нажатых клавиш в виде кортежа
+ * @param {Combination} combination - Комбинация нажатых клавиш в виде кортежа
  * @param {(...args:any[]) => void} callback - Функция которая выполнится при выполнении условии
  * @param {boolean} preventDefault - нужно ли сделать e.preventDefault()
  */
 export function shortcut(
   e: KeyboardEvent,
-  combination: [ModCode, ModCode, KeyCode] | [ModCode, KeyCode] | [KeyCode],
+  combination: Combination,
   callback?: (...args: any[]) => any,
   preventDefault?: boolean,
 ) {
@@ -94,3 +99,14 @@ const keyCodes = {
   N: "KeyN",
   M: "KeyM",
 } as const;
+
+export const GlobalShortcuts = {
+  REDO: ["Ctrl", "Shift", "Z"],
+  SELECT_ALL_BLOCKS: ["Ctrl", "Shift", "A"],
+  DELETE_SELECTED_BLOCKS: ["Shift", "Ctrl", "Backspace"],
+  UNDO: ["Ctrl", "Z"],
+  REDO_LEGACY: ["Ctrl", "Y"],
+  SELECT_PREV_BLOCK: ["Shift", "Tab"],
+  SELECT_NEXT_BLOCK: ["Tab"],
+  CREATE_NEW_BLOCK: ["Enter"],
+} as const satisfies Record<string, Combination>;

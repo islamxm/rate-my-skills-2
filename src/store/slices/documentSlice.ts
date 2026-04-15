@@ -43,9 +43,7 @@ function commitResult(
   result: { doc: MOMDocument; op: MOMOperation },
 ) {
   state.doc = result.doc;
-
   state.history.future = [];
-
   state.history.past.push(result.op);
 
   if (state.history.past.length > MAX_HISTORY_DEPTH) {

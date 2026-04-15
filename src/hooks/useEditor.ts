@@ -6,6 +6,9 @@ import { useDocumentActions } from "./useDocumentActions";
 import { useChildren } from "./useChildren";
 import { useSelectionActions } from "./useSelectionActions";
 import { useNodeSelection } from "./useNodeSelection";
+import { GlobalShortcuts, shortcut } from "@/utils/shortcut";
+
+const globalShortcutsList = Object.entries(GlobalShortcuts);
 
 /**
  * text - если разрешен только сырой текст (ex: h1,h2,...)
@@ -61,7 +64,12 @@ export function useEditor<T extends HTMLElement>(
   const save = () => {
     if (!ref.current) return;
     currentHtml.current = undefined;
-    if (parseType === "plain") {
+    if (parseType === "plain" && "value" in node) {
+      const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
+        ref.current.textContent,
+        node.value,
+      );
+      if (canSkipUpdate) return;
       updateNode({
         nodeId: node.id,
         patch: { ...node, value: ref.current.textContent },
@@ -69,7 +77,13 @@ export function useEditor<T extends HTMLElement>(
     }
     if (parseType === "deep") {
       const nodes = MOM.Parser.domToMom(ref.current);
-      if (nodes.length === 0) return;
+
+      const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
+        MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), node.id),
+        MOM.Serializer.momToHTML(nodes, node.id),
+      );
+
+      if (nodes.length === 0 || canSkipUpdate) return;
       commitInlineEdit({ nodeId: node.id, nodes });
     }
   };
@@ -87,23 +101,14 @@ export function useEditor<T extends HTMLElement>(
 
   /** обработка действий которые идут через клавишу */
   const onKeyboardEvent = (e: React.KeyboardEvent) => {
-    if (e.ctrlKey || e.metaKey) {
-      switch (e.code) {
-        case "KeyU":
-          e.preventDefault();
-          applyFormat("lineThrough");
-          return;
-        case "KeyI":
-          e.preventDefault();
-          applyFormat("italic");
-          break;
-        case "KeyB":
-          e.preventDefault();
-          applyFormat("bold");
-          break;
-      }
-      return;
-    }
+
+    const isGlobalShortcut = globalShortcutsList.some(([_,value]) => shortcut(e.nativeEvent, value, save))
+
+    if(isGlobalShortcut) return;
+
+    shortcut(e.nativeEvent, ["Ctrl", "U"], () => applyFormat("lineThrough"), true);
+    shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true)
+    shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true)
   };
 
   /** чистим от форматирования вставляемый текст */
@@ -120,6 +125,13 @@ export function useEditor<T extends HTMLElement>(
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
     currentHtml.current = undefined;
+
+    const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
+      MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), node.id),
+      MOM.Serializer.momToHTML(result.nodes, node.id),
+    );
+
+    if (canSkipUpdate) return;
     commitInlineEdit({ nodeId: node.id, nodes: result.nodes });
   };
 
