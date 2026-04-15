@@ -5,6 +5,7 @@ import { Guard } from "./validator/typeGuards";
 import { Serializer } from "./serializer/serializer";
 import { Parser } from "./parser/parser";
 import { Editor } from "./editor/editor";
+import { Export } from "./export/export";
 
 export const MOM = {
   Engine,
@@ -13,5 +14,6 @@ export const MOM = {
   Guard,
   Serializer,
   Parser,
-  Editor
+  Editor,
+  Export
 } as const;
