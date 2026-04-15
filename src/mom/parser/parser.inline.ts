@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import type { MOMAllContent } from "../types";
+import type { MOMAllContent, MOMText } from "../types";
 
 export function parseDOMtoMOM(element: HTMLElement) {
   return parseDOMChildNodes(element, null);
@@ -22,11 +22,12 @@ export function parseDOMNode(node: Node, parentId: string | null) {
   if (node.nodeType === Node.TEXT_NODE) {
     const value = node.textContent ?? "";
     if (!value) return [];
-    const textNode: MOMAllContent = {
+    const textNode: MOMText = {
       id: nanoid(),
       parentId,
       type: "text",
       value,
+      marks: {}
     };
 
     return [textNode];
