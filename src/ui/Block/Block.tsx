@@ -5,7 +5,6 @@ import { renderer } from "../renderer";
 import clsx from "clsx";
 import { getBlockColors } from "../tokens";
 import type { MOMBlockNodeType } from "../../mom/types";
-import { motion } from "motion/react";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -56,19 +55,13 @@ export const Block: FC<Props> = ({ nodeId }) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <motion.div
-          key={nodeId}
-          layout={"position"}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className={clsx(typeCssClass, classes.wrapper)}
-        >
+        <div data-block className={clsx(typeCssClass, classes.wrapper)}>
           <div
             onClick={select}
             className={clsx(
               `rounded-sm border border-solid w-full outline-[4px]`,
               !blockHighlighting && classes.highlight_disabled,
-              isSelected && classes.selected
+              isSelected && classes.selected,
             )}
             style={
               blockHighlighting
@@ -78,12 +71,12 @@ export const Block: FC<Props> = ({ nodeId }) => {
                     borderStyle: "solid",
                     outlineColor: isSelected ? border : "transparent",
                   }
-                : { outline: `1px dashed ${text}`, border: "none"}
+                : { outline: `1px dashed ${text}`, border: "none" }
             }
           >
             {renderer(node)}
           </div>
-        </motion.div>
+        </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
         <ContextMenuItem>
