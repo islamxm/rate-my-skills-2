@@ -90,6 +90,10 @@ export function useDocumentActions() {
     dispatch(deleteSelectedBlocksThunk());
   }
 
+  function updateRootOrder(order: Array<string>) {
+    dispatch(documentStoreActions.updateRootOrder(order));
+  }
+
   return {
     insertNode,
     insertNodes,
@@ -105,5 +109,6 @@ export function useDocumentActions() {
     clearDocument,
     createNewBlock,
     deleteSelectedBlocks,
+    updateRootOrder
   };
 }

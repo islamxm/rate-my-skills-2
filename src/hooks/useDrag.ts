@@ -1,21 +1,22 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
+import { useDocumentActions } from "./useDocumentActions";
 
-const DRAGGRABLE_ELEMENT_DOM_SELECTOR = '[data-block]';
-const DRAG_BUTTON_DOM_SELECTOR = '[data-drag]';
-const BODY_CSS_CLASS = 'markdown-body';
+const DRAGGRABLE_ELEMENT_DOM_SELECTOR = "[data-block]";
+const DRAG_BUTTON_DOM_SELECTOR = "[data-drag]";
+const BODY_CSS_CLASS = "markdown-body";
 const BLOCK_TRANSITION_DURATION = 0.2;
-const BLOCK_TRANSITION_ANIM = 'cubic-bezier(0.2, 0, 0, 1)';
+const BLOCK_TRANSITION_ANIM = "cubic-bezier(0.2, 0, 0, 1)";
 
 const createPortal = () => {
-  const portal = document.createElement('div');
+  const portal = document.createElement("div");
 
-  const mask = document.createElement('div');
+  const mask = document.createElement("div");
 
-  mask.style.position = 'fixed';
-  mask.style.inset = '0';
-  mask.style.background = 'transparent';
-  mask.style.zIndex = '999';
-  mask.style.pointerEvents = 'auto';
+  mask.style.position = "fixed";
+  mask.style.inset = "0";
+  mask.style.background = "transparent";
+  mask.style.zIndex = "999";
+  mask.style.pointerEvents = "auto";
   // document.body.style.userSelect = 'none';
 
   portal.classList.add(BODY_CSS_CLASS);
@@ -41,6 +42,8 @@ type Block = {
 } & Rect;
 
 export function useDrag_proto() {
+  const { updateRootOrder } = useDocumentActions();
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const isDragStarted = useRef(false);
@@ -71,7 +74,7 @@ export function useDrag_proto() {
     if (!(e.target instanceof HTMLElement && e.target.closest(DRAG_BUTTON_DOM_SELECTOR))) return;
     const dragButton = e.target.closest(DRAG_BUTTON_DOM_SELECTOR);
     if (dragButton instanceof HTMLElement) {
-      dragButton.style.opacity = '1';
+      dragButton.style.opacity = "1";
     }
     const targetEl = e.target.closest(DRAGGRABLE_ELEMENT_DOM_SELECTOR);
     if (!targetEl || !(targetEl instanceof HTMLElement)) return;
@@ -85,7 +88,7 @@ export function useDrag_proto() {
         const styles = getComputedStyle(el);
         const mt = parseFloat(styles.marginTop);
         const mb = parseFloat(styles.marginBottom);
-        const id = el.dataset.id ?? '';
+        const id = el.dataset.id ?? "";
         return {
           id,
           el,
@@ -102,7 +105,7 @@ export function useDrag_proto() {
     const originalStyles = getComputedStyle(targetEl);
     const mt = parseFloat(originalStyles.marginTop);
     const mb = parseFloat(originalStyles.marginBottom);
-    const id = targetEl.dataset.id ?? '';
+    const id = targetEl.dataset.id ?? "";
     originalBlockData.current = {
       id,
       el: targetEl,
@@ -116,7 +119,7 @@ export function useDrag_proto() {
         mb,
       },
     };
-    originalBlockData.current.el.style.opacity = '0';
+    originalBlockData.current.el.style.opacity = "0";
     containerRef.current?.setPointerCapture(e.pointerId);
 
     const clone = originalBlockData.current.el.cloneNode(true);
@@ -134,18 +137,18 @@ export function useDrag_proto() {
 
     const { el: ghostEl } = ghostBlockData.current;
 
-    ghostEl.style.opacity = '0.5';
-    ghostEl.style.position = 'fixed';
-    ghostEl.style.zIndex = '1000';
-    ghostEl.style.margin = '0';
+    ghostEl.style.opacity = "0.5";
+    ghostEl.style.position = "fixed";
+    ghostEl.style.zIndex = "1000";
+    ghostEl.style.margin = "0";
     ghostEl.style.top = `${originalBounds.top}px`;
     ghostEl.style.left = `${originalBounds.left}px`;
     ghostEl.style.width = `${originalBounds.width}px`;
     ghostEl.style.height = `${originalBounds.height}px`;
     ghostEl.style.transform = `translate3d(${0}px, ${0}px, 0)`;
-    ghostEl.style.willChange = 'transform';
-    ghostEl.style.pointerEvents = 'none';
-    ghostEl.style.touchAction = 'none';
+    ghostEl.style.willChange = "transform";
+    ghostEl.style.pointerEvents = "none";
+    ghostEl.style.touchAction = "none";
 
     const { mask: maskEl, portal: portalEl } = createPortal();
     portal.current = portalEl;
@@ -174,9 +177,9 @@ export function useDrag_proto() {
 
       if (!mask.current) return;
 
-      mask.current.style.pointerEvents = 'none';
+      mask.current.style.pointerEvents = "none";
       const currentDomBlock = document.elementFromPoint(pointerClientX, pointerClientY)?.closest(DRAGGRABLE_ELEMENT_DOM_SELECTOR);
-      mask.current.style.pointerEvents = 'auto';
+      mask.current.style.pointerEvents = "auto";
 
       if (mask.current && originalBlockData.current && currentDomBlock && currentDomBlock !== originalBlockData.current.el) {
         const currentBlock = blocks.current.find((block) => block.el === currentDomBlock)!;
@@ -205,7 +208,6 @@ export function useDrag_proto() {
   };
 
   const endDrag = (e: PointerEvent) => {
-    console.log('end');
     if (!isDragStarted.current) return;
 
     if (dropIndex.current !== originalBlockData.current?.index && dropIndex.current !== -1) {
@@ -225,10 +227,14 @@ export function useDrag_proto() {
     const translateX = targetX - ghostX;
     isDragStarted.current = false;
     ghostBlockData.current.el.addEventListener(
-      'transitionend',
+      "transitionend",
       (e) => {
-        if (e.propertyName !== 'transform') return;
-        // cleanup and commit to store;
+        if (e.propertyName !== "transform" || !originalBlockData.current) return;
+        originalBlockData.current.el.style.opacity = "1";
+        resetBlockTransforms();
+        cleanUpAfterDrag();
+        const newOrder = transformedBlocks.current.map((b) => b.id);
+        updateRootOrder(newOrder);
       },
       { once: true },
     );
@@ -238,9 +244,15 @@ export function useDrag_proto() {
   };
 
   const revertDrop = () => {
-    blocks.current.forEach((block) => {
-      block.el.style.transform = `translate3d(0, 0, 0)`;
-    });
+    if (blocks.current.length === 0 || !ghostBlockData.current) return;
+    ghostBlockData.current.el.style.transition = `transform ${BLOCK_TRANSITION_DURATION}s ${BLOCK_TRANSITION_ANIM}`;
+    ghostBlockData.current.el.style.transform = "translate3d(0,0,0)";
+    ghostBlockData.current.el.addEventListener("transitionend", (e) => {
+      if (e.propertyName !== "transform" || !originalBlockData.current) return;
+        originalBlockData.current.el.style.opacity = "1";
+        resetBlockTransforms();
+        cleanUpAfterDrag();
+    }, {once: true});
   };
 
   const computeMarginCollapse = (mb: number, mt: number) => {
@@ -268,6 +280,15 @@ export function useDrag_proto() {
     return { positions, list };
   };
 
+  const resetBlockTransforms = () => {
+    if (blocks.current) {
+      blocks.current.forEach((b) => {
+        b.el.style.transition = "none";
+        b.el.style.transform = "translate3d(0,0,0)";
+      });
+    }
+  };
+
   const cleanUpAfterDrag = () => {
     isDragStarted.current = false;
     ticking.current = false;
@@ -275,23 +296,28 @@ export function useDrag_proto() {
     originalBlockData.current = null;
     ghostBlockData.current = null;
     dropIndex.current = -1;
+    portal.current?.remove();
+    mask.current = null;
+    blocks.current = [];
   };
 
   useEffect(() => {
     if (!containerRef.current) return;
 
+    // cleanUpAfterDrag();
+
     const ref = containerRef.current;
 
-    ref.addEventListener('pointerdown', startDrag);
-    document.addEventListener('pointermove', drag);
-    document.addEventListener('pointerup', endDrag);
-    document.addEventListener('pointercancel', endDrag);
+    ref.addEventListener("pointerdown", startDrag);
+    document.addEventListener("pointermove", drag);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
 
     return () => {
-      ref.removeEventListener('pointerdown', startDrag);
-      document.removeEventListener('pointermove', drag);
-      document.removeEventListener('pointerup', endDrag);
-      document.removeEventListener('pointercancel', endDrag);
+      ref.removeEventListener("pointerdown", startDrag);
+      document.removeEventListener("pointermove", drag);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
     };
   }, []);
 
