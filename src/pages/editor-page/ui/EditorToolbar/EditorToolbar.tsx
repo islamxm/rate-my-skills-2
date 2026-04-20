@@ -1,5 +1,14 @@
 import { useDocumentActions } from "@/hooks/useDocumentActions";
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Tooltip, TooltipContent, TooltipTrigger } from "../shared";
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@shared/ui";
 import { MOM } from "@/mom";
 import type { MOMAlert, MOMHeading } from "@/mom/types";
 import {

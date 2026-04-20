@@ -30,8 +30,8 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "../shared";
-import logo from "../../../public/logo.svg";
+} from "@shared/ui";
+import logo from "../../../../../public/logo.svg";
 import { useDocumentActions, useHistory } from "@/hooks";
 import { useUI } from "@/hooks";
 import { ExportMarkdownButton } from "@/features/export-markdown";

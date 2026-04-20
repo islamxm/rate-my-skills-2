@@ -1,10 +1,10 @@
 import { useDocument, useNode } from "@/hooks";
 import type { MOMAllContent, MOMBlockNodeType } from "@/mom/types";
-import { getBlockColors } from "../tokens";
 import { motion } from "motion/react";
 import { useSelectionActions } from "@/hooks/useSelectionActions";
 import clsx from "clsx";
 import { useRef } from "react";
+import { getBlockColors } from "@/ui/tokens";
 
 const getValueForBlockVisualHeight = (node: MOMAllContent) => {
   const id = node.id;
@@ -26,7 +26,7 @@ const Block = ({ nodeId }: { nodeId: string }) => {
   const height = 30 + getValueForBlockVisualHeight(node) * 0.2;
 
   const scrollToElement = () => {
-    if(!ref.current) return;
+    if (!ref.current) return;
     const element = document.querySelector(`[data-id="${nodeId}"]`);
     selectNode(nodeId);
     if (element) {
@@ -49,9 +49,7 @@ const Block = ({ nodeId }: { nodeId: string }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       layout
-      className={clsx(
-        "w-full rounded-md p-2 flex justify-start items-center text-xs cursor-pointer flex-none",
-      )}
+      className={clsx("w-full rounded-md p-2 flex justify-start items-center text-xs cursor-pointer flex-none")}
       style={{
         backgroundColor: border,
         color: text,
@@ -72,20 +70,12 @@ export const CanvasMap = () => {
   const { rootOrder } = useDocument();
 
   return (
-    <motion.div
-      layout
-      className="flex flex-col gap-1 rounded-lg border h-full p-3 bg-white w-[250px] overflow-auto min-h-0"
-    >
+    <motion.div layout className="flex flex-col gap-1 rounded-lg border h-full p-3 bg-white w-[250px] overflow-auto min-h-0">
       {rootOrder.length > 0 ? (
         rootOrder.map((nodeId) => <Block key={nodeId} nodeId={nodeId} />)
       ) : (
         <>
-          <motion.div
-            initial={{ y: "20%", opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-lg text-center"
-          >
+          <motion.div initial={{ y: "20%", opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="text-lg text-center">
             Structure
           </motion.div>
           <motion.div

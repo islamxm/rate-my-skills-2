@@ -102,9 +102,9 @@ export function useEditor<T extends HTMLElement>(
   /** обработка действий которые идут через клавишу */
   const onKeyboardEvent = (e: React.KeyboardEvent) => {
 
-    const isGlobalShortcut = globalShortcutsList.some(([_,value]) => shortcut(e.nativeEvent, value, save))
+    // const isGlobalShortcut = globalShortcutsList.some(([_,value]) => shortcut(e.nativeEvent, value, save))
 
-    if(isGlobalShortcut) return;
+    // if(isGlobalShortcut) return;
 
     shortcut(e.nativeEvent, ["Ctrl", "U"], () => applyFormat("lineThrough"), true);
     shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true)

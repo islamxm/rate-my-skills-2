@@ -3,7 +3,7 @@ import { useFloating, flip, shift } from "@floating-ui/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
-import { Button, InputGroup, InputGroupInput } from "../shared";
+import { Button, InputGroup, InputGroupInput } from "@shared/ui";
 
 type Props = {
   containerRef: RefObject<HTMLElement>;

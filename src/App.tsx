@@ -1,7 +1,7 @@
+import { Toaster, TooltipProvider } from "@shared/ui";
 import { StoreProvider } from "./store";
-import { EditorPage } from "./ui/pages";
-import { TooltipProvider } from "./ui/shared/tooltip";
-import { Toaster } from "./ui/shared";
+import { EditorPage } from "@pages/editor-page";
+
 
 function App() {
   return (

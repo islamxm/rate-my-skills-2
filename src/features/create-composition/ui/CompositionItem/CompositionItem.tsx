@@ -1,4 +1,4 @@
-import { Button } from "@/ui/shared";
+import { Button } from "@shared/ui";
 import type { FC, ReactNode } from "react";
 
 type Props = {

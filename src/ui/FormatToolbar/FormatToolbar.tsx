@@ -5,7 +5,7 @@ import {
   type RefObject,
 } from "react";
 import { Bold, Italic, Link, Strikethrough } from "lucide-react";
-import { Button } from "@/ui/shared";
+import { Button } from "@shared/ui";
 import type { MOMTextMarks } from "@/mom/types";
 import { useFloating, offset, flip, shift, inline } from "@floating-ui/react";
 import { MOM } from "@/mom";

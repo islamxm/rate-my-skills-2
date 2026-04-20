@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
   Input,
   Spinner,
-} from "../shared";
+} from "@shared/ui";
 import { Check, Link, MoreVertical, Trash2, XIcon } from "lucide-react";
 
 type Props = {

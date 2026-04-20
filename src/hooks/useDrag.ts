@@ -40,7 +40,7 @@ type Block = {
   el: HTMLElement;
 } & Rect;
 
-export function useDrag_proto() {
+export function useDrag() {
   const { updateRootOrder } = useDocumentActions();
 
   const containerRef = useRef<HTMLDivElement>(null);

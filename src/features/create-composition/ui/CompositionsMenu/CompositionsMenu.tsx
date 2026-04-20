@@ -1,4 +1,4 @@
-import { DropdownMenuContent } from "@/ui/shared";
+import { DropdownMenuContent } from "@shared/ui";
 import type { FC, PropsWithChildren } from "react";
 
 export const CompositionsMenu: FC<PropsWithChildren> = ({ children }) => {

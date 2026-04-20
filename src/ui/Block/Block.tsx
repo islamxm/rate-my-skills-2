@@ -5,7 +5,7 @@ import { renderer } from "../renderer";
 import clsx from "clsx";
 import { getBlockColors } from "../tokens";
 import type { MOMBlockNodeType } from "../../mom/types";
-import { Button, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "../shared";
+import { Button, ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuSeparator, ContextMenuTrigger } from "@shared/ui";
 import { BrushCleaning, Copy, CopyX, Grip, SquareMousePointer, SquareStack } from "lucide-react";
 import { MOM } from "@/mom";
 import { useUI } from "@/hooks";

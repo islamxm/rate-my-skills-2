@@ -1,7 +1,7 @@
-import { CanvasMap } from "@/ui/CanvasMap/CanvasMap";
-import { Canvas } from "../../../../Canvas/Canvas";
-import { EditorToolbar } from "@/ui/EditorToolbar/EditorToolbar";
-import { TopToolbar } from "@/ui/TopToolbar/TopToolbar";
+import { Canvas } from "../Canvas/Canvas";
+import { CanvasMap } from "../CanvasMap/CanvasMap";
+import { EditorToolbar } from "../EditorToolbar/EditorToolbar";
+import { TopToolbar } from "../TopToolbar/TopToolbar";
 
 export const EditorPage = () => {
   return (

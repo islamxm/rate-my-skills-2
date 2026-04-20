@@ -1,4 +1,4 @@
-import { Button } from "@/ui/shared";
+import { Button } from "@shared/ui";
 import { Download } from "lucide-react";
 import { useExportMarkdown } from "../../lib/useExportMarkdown";
 

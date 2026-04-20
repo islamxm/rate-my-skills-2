@@ -3,7 +3,7 @@ import { useRaw, useNode } from "../../hooks";
 import { MOM } from "../../mom";
 import type { MOMRaw } from "../../mom/types";
 import { AppWindowIcon, CodeIcon } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "../shared";
+import { Tabs, TabsList, TabsTrigger } from "@shared/ui";
 import Textarea from "react-textarea-autosize";
 
 import Markdown from "react-markdown";

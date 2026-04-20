@@ -15,7 +15,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "../shared";
+} from "@shared/ui";
 import { getBlockColors } from "../tokens";
 import { Copy } from "lucide-react";
 import { toast } from "sonner";

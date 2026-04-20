@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, DropdownMenuTrigger, Tooltip, TooltipContent, TooltipTrigger } from "@/ui/shared";
+import { Button, DropdownMenu, DropdownMenuTrigger, Tooltip, TooltipContent, TooltipTrigger } from "@shared/ui";
 import { Puzzle } from "lucide-react";
 import { CompositionsMenu } from "../CompositionsMenu/CompositionsMenu";
 import { CompositionItem } from "../CompositionItem/CompositionItem";
