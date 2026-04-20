@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
-import { useSelectionActions } from "./useSelectionActions";
 
 const DRAGGRABLE_ELEMENT_DOM_SELECTOR = "[data-block]";
-const DRAG_START_DELAY = 500;
+const DRAG_BUTTON_DOM_SELECTOR = "[data-drag]";
 const BODY_CSS_CLASS = "markdown-body";
+const BLOCK_TRANSITION_DURATION = 0.2;
 
 const createPortal = () => {
   const portal = document.createElement("div");
@@ -14,90 +14,150 @@ const createPortal = () => {
   mask.style.inset = "0";
   mask.style.background = "transparent";
   mask.style.zIndex = "999";
-  mask.style.pointerEvents = "auto";
+  // mask.style.pointerEvents = "auto";
+  document.body.style.userSelect = "none";
 
   portal.classList.add(BODY_CSS_CLASS);
 
   portal.append(mask);
   document.body.append(portal);
 
-  return portal;
+  return { portal, mask };
+};
+
+type Rect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  mt: number;
+  mb: number;
+};
+
+type Block = {
+  el: HTMLElement;
+  bounds: Rect;
 };
 
 export function useDrag_proto() {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const { blur } = useSelectionActions();
-
-  const dragStartTimer = useRef<any>(null);
   const isDragStarted = useRef(false);
-  const nativeTargetElement = useRef<HTMLElement>(null);
-  const dragData = useRef<{
+
+  const ghostBlockData = useRef<{
     el: HTMLElement;
     initialMousePos: { x: number; y: number };
   }>(null);
+  const originalBlockData = useRef<{
+    el: HTMLElement;
+    index: number;
+    initialBounds: Rect;
+  }>(null);
+
   const portal = useRef<HTMLDivElement>(null);
-  const dropZoneLine = useRef<HTMLDivElement>(null);
+  const mask = useRef<HTMLDivElement>(null);
+  const blocks = useRef<Array<Block>>([]);
 
   const mouseCoords = useRef({ x: 0, y: 0 });
   const ticking = useRef(false);
-  const lastDropZoneSearchTimeInMs = useRef(0);
+  const dropIndex = useRef(-1);
 
   const startDrag = (e: PointerEvent) => {
-    if (!(e.target instanceof HTMLElement)) return;
+    if (
+      !(
+        e.target instanceof HTMLElement &&
+        e.target.closest(DRAG_BUTTON_DOM_SELECTOR)
+      )
+    )
+      return;
+    const dragButton = e.target.closest(DRAG_BUTTON_DOM_SELECTOR);
+    if (dragButton instanceof HTMLElement) {
+      dragButton.style.opacity = "1";
+    }
     const targetEl = e.target.closest(DRAGGRABLE_ELEMENT_DOM_SELECTOR);
     if (!targetEl || !(targetEl instanceof HTMLElement)) return;
-    clearDragStartTimer();
-    dragStartTimer.current = setTimeout(() => {
-      isDragStarted.current = true;
-      targetEl.style.opacity = "0";
-      targetEl.setPointerCapture(e.pointerId);
-      nativeTargetElement.current = targetEl;
-      const clone = nativeTargetElement.current.cloneNode(true);
-      if (!(clone instanceof HTMLElement)) return;
 
-      const bounds = nativeTargetElement.current.getBoundingClientRect();
+    isDragStarted.current = true;
 
-      dragData.current = {
-        el: clone,
-        initialMousePos: {
-          x: e.clientX,
-          y: e.clientY,
-        },
-      };
+    blocks.current = Array.from(
+      containerRef.current?.querySelectorAll(DRAGGRABLE_ELEMENT_DOM_SELECTOR) ??
+        [],
+    )
+      .filter((el) => el instanceof HTMLElement)
+      .map((el) => {
+        const { width, height, x, y } = el.getBoundingClientRect();
+        const styles = getComputedStyle(el);
+        const mt = parseFloat(styles.marginTop);
+        const mb = parseFloat(styles.marginBottom);
+        return {
+          el,
+          bounds: {
+            width,
+            height,
+            x,
+            y,
+            mt,
+            mb,
+          },
+        };
+      });
 
-      dragData.current.el.style.opacity = "0.5";
-      dragData.current.el.style.position = "fixed";
-      dragData.current.el.style.zIndex = "1000";
-      dragData.current.el.style.margin = "0";
-      dragData.current.el.style.top = `${bounds.top}px`;
-      dragData.current.el.style.left = `${bounds.left}px`;
-      dragData.current.el.style.width = `${bounds.width}px`;
-      dragData.current.el.style.height = `${bounds.height}px`;
-      dragData.current.el.style.transform = `translate3d(${0}px, ${0}px, 0)`;
-      dragData.current.el.style.willChange = "transform";
-      dragData.current.el.style.pointerEvents = "none";
-      dragData.current.el.style.touchAction = "none";
+    const originalIndex = blocks.current.findIndex(
+      (block) => block.el === targetEl,
+    );
+    const originalBounds = targetEl.getBoundingClientRect();
+    const originalStyles = getComputedStyle(targetEl);
+    const mt = parseFloat(originalStyles.marginTop);
+    const mb = parseFloat(originalStyles.marginBottom);
+    originalBlockData.current = {
+      el: targetEl,
+      index: originalIndex,
+      initialBounds: {
+        height: originalBounds.height,
+        width: originalBounds.width,
+        x: originalBounds.x,
+        y: originalBounds.y,
+        mt,
+        mb,
+      },
+    };
+    originalBlockData.current.el.style.opacity = "0";
+    containerRef.current?.setPointerCapture(e.pointerId);
 
-      portal.current = createPortal();
-      portal.current.append(dragData.current.el);
+    const clone = originalBlockData.current.el.cloneNode(true);
+    if (!(clone instanceof HTMLElement)) return;
 
-      blur();
-    }, DRAG_START_DELAY);
-  };
+    ghostBlockData.current = {
+      el: clone,
+      initialMousePos: {
+        x: e.clientX,
+        y: e.clientY,
+      },
+    };
 
-  const endDrag = (e: PointerEvent) => {
-    clearDragStartTimer();
-    if (!isDragStarted.current) return;
-    isDragStarted.current = false;
-    dropZoneLine.current?.remove();
-    dropZoneLine.current = null;
-    returnDrag();
+    const { el: ghostEl } = ghostBlockData.current;
+
+    ghostEl.style.opacity = "0.5";
+    ghostEl.style.position = "fixed";
+    ghostEl.style.zIndex = "1000";
+    ghostEl.style.margin = "0";
+    ghostEl.style.top = `${originalBounds.top}px`;
+    ghostEl.style.left = `${originalBounds.left}px`;
+    ghostEl.style.width = `${originalBounds.width}px`;
+    ghostEl.style.height = `${originalBounds.height}px`;
+    ghostEl.style.transform = `translate3d(${0}px, ${0}px, 0)`;
+    ghostEl.style.willChange = "transform";
+    ghostEl.style.pointerEvents = "none";
+    ghostEl.style.touchAction = "none";
+
+    const { mask: maskEl, portal: portalEl } = createPortal();
+    portal.current = portalEl;
+    portal.current.append(ghostEl);
+    mask.current = maskEl;
   };
 
   const drag = (e: PointerEvent) => {
-    if (!isDragStarted.current || !dragData.current) {
-      clearDragStartTimer();
+    if (!(isDragStarted.current && ghostBlockData.current)) {
       return;
     }
 
@@ -106,98 +166,58 @@ export function useDrag_proto() {
 
     ticking.current = true;
     requestAnimationFrame(() => {
-      const { initialMousePos, el } = dragData.current!;
-      const { x: pointerClientX, y: pointerClientY } = mouseCoords.current;
-      const x = pointerClientX - initialMousePos.x;
-      const y = pointerClientY - initialMousePos.y;
-
-      el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-
-      const canSearchDropZone =
-        Date.now() - lastDropZoneSearchTimeInMs.current > 60;
-
-      if (canSearchDropZone) {
-        const overs = document.elementsFromPoint(
-          pointerClientX,
-          pointerClientY,
-        );
-
-        const dropAfterEl = overs.find(
-          (o) =>
-            o !== nativeTargetElement.current &&
-            o instanceof HTMLElement &&
-            o.dataset.block,
-        );
-
-        if (dropAfterEl && dropAfterEl instanceof HTMLElement) {
-          if (dropAfterEl !== nativeTargetElement.current) {
-            if (dropZoneLine.current) {
-              const { top, height } = dropAfterEl.getBoundingClientRect();
-              dropZoneLine.current.style.top = `${top + height}px`;
-            } else {
-              createDropZoneLine(dropAfterEl);
-            }
-          } else {
-            dropZoneLine.current?.remove();
-            dropZoneLine.current = null;
-          }
-        }
-
-        lastDropZoneSearchTimeInMs.current = Date.now();
+      if (!isDragStarted.current || !ghostBlockData.current) {
+        ticking.current = false;
+        return;
       }
 
+      const { initialMousePos, el } = ghostBlockData.current!;
+      const { y: pointerClientY, x: pointerClientX } = mouseCoords.current;
+      const y = pointerClientY - initialMousePos.y;
+
+      if (mask.current && originalBlockData.current) {
+        mask.current.style.pointerEvents = "none";
+        const currentBlock = document
+          .elementFromPoint(pointerClientX, pointerClientY)
+          ?.closest(DRAGGRABLE_ELEMENT_DOM_SELECTOR);
+        
+        // новая логика драга
+
+      }
+      el.style.transform = `translate3d(0, ${y}px, 0)`;
       ticking.current = false;
     });
   };
 
-  const returnDrag = () => {
-    if (!nativeTargetElement.current || !dragData?.current?.el) return;
-    dragData.current.el.addEventListener(
-      "transitionend",
-      (e: TransitionEvent) => {
-        if (e.propertyName !== "transform" || !nativeTargetElement.current)
-          return;
-        nativeTargetElement.current.style.opacity = "1";
-        cleanUpAfterDrag();
-      },
-      { once: true },
-    );
-    dragData.current.el.style.transition =
-      "transform .4s cubic-bezier(0.2, 0, 0, 1)";
-    dragData.current.el.style.transform = "translate3d(0,0,0)";
+  const endDrag = (e: PointerEvent) => {
+    isDragStarted.current = false;
+    commitDrop();
   };
+
+  const commitDrop = () => {
+    // ghostBlockData.current?.el.addEventListener(
+    //   "transitionend",
+    //   cleanUpAfterDrag,
+    //   {
+    //     once: true,
+    //   },
+    // );
+  };
+
+  const revertDrop = () => {};
 
   const applyDrag = () => {};
 
-  const createDropZoneLine = (target: HTMLElement) => {
-    const { width, top, left, height } = target.getBoundingClientRect();
-    const dropLine = document.createElement("div");
-    dropLine.style.height = "4px";
-    dropLine.style.backgroundColor = "#2C7FFF";
-    dropLine.style.position = "fixed";
-    dropLine.style.top = `${top + height}px`;
-    dropLine.style.left = `${left - 5}px`;
-    dropLine.style.width = `${width + 10}px`;
-    dropLine.style.borderRadius = "4px";
-    dropZoneLine.current = dropLine;
-    containerRef.current?.append(dropLine);
-  };
-
-  const clearDragStartTimer = () => {
-    if (dragStartTimer.current) {
-      clearTimeout(dragStartTimer.current);
-      dragStartTimer.current = null;
-    }
-  };
-
   const cleanUpAfterDrag = () => {
-    clearDragStartTimer();
     isDragStarted.current = false;
-    portal.current?.remove();
-    nativeTargetElement.current = null;
-    dragData.current = null;
+    // portal.current?.remove();
     ticking.current = false;
     mouseCoords.current = { x: 0, y: 0 };
+    originalBlockData.current = null;
+    ghostBlockData.current = null;
+    dropIndex.current = -1;
+    // mask.current = null;
+    // portal.current = null;
   };
 
   useEffect(() => {
@@ -206,13 +226,15 @@ export function useDrag_proto() {
     const ref = containerRef.current;
 
     ref.addEventListener("pointerdown", startDrag);
-    ref.addEventListener("pointerup", endDrag);
-    ref.addEventListener("pointermove", drag);
+    document.addEventListener("pointermove", drag);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
 
     return () => {
       ref.removeEventListener("pointerdown", startDrag);
-      ref.removeEventListener("pointerup", endDrag);
-      ref.removeEventListener("pointermove", drag);
+      document.removeEventListener("pointermove", drag);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
     };
   }, []);
 

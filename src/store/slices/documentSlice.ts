@@ -14,6 +14,46 @@ type UndoStack = {
   future: MOMOperation[];
 };
 
+const mockDoc: MOMDocument = {
+  rootOrder: [
+    "qo8wMSGBEtVOOvIVchSm1",
+    "kYvBwjqAB885gn6TdV_W_",
+    "JZlojwg8ZySLiX4z0gtqM",
+  ],
+  nodes: {
+    qo8wMSGBEtVOOvIVchSm1: {
+      parentId: null,
+      id: "qo8wMSGBEtVOOvIVchSm1",
+      type: "heading",
+      depth: 1,
+      value: "Title",
+    },
+    kYvBwjqAB885gn6TdV_W_: {
+      parentId: null,
+      id: "kYvBwjqAB885gn6TdV_W_",
+      type: "paragraph",
+      children: ["2q2W3z7JfNfwID0NyV0_K"],
+    },
+    "2q2W3z7JfNfwID0NyV0_K": {
+      parentId: "kYvBwjqAB885gn6TdV_W_",
+      id: "2q2W3z7JfNfwID0NyV0_K",
+      type: "text",
+      value: "Description",
+      marks: {},
+    },
+    JZlojwg8ZySLiX4z0gtqM: {
+      parentId: null,
+      id: "JZlojwg8ZySLiX4z0gtqM",
+      type: "image",
+      url: "",
+      alt: "",
+      title: "",
+      linkUrl: "",
+    },
+  },
+  groups: {},
+};
+
 type InitialState = {
   doc: MOMDocument;
   history: UndoStack;
@@ -27,11 +67,12 @@ const textNode3 = MOM.Engine.createText(" 3 part", pNode.id);
 pNode.children = [textNode1.id, textNode2.id, textNode3.id];
 
 const initialState: InitialState = {
-  doc: {
-    rootOrder: [],
-    nodes: {},
-    groups: {},
-  },
+  doc: mockDoc,
+  // doc: {
+  //   rootOrder: [],
+  //   nodes: {},
+  //   groups: {},
+  // },
   history: { past: [], future: [] },
   copiedNode: undefined,
 };

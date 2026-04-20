@@ -4,11 +4,11 @@ import { useSelector } from "../shared/lib";
 export function useDocument() {
   const rootOrder = useSelector((s) => s.document.doc.rootOrder);
   const groups = useSelector((s) => s.document.doc.groups);
-  const nodes = useSelector(s => s.document.doc.nodes);
+  const nodes = useSelector((s) => s.document.doc.nodes);
 
   return {
     rootOrder,
     groups,
-    nodes
+    nodes,
   };
 }

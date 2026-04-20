@@ -6,6 +6,7 @@ import clsx from "clsx";
 import { getBlockColors } from "../tokens";
 import type { MOMBlockNodeType } from "../../mom/types";
 import {
+  Button,
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -16,6 +17,7 @@ import {
   BrushCleaning,
   Copy,
   CopyX,
+  Grip,
   SquareMousePointer,
   SquareStack,
 } from "lucide-react";
@@ -55,7 +57,10 @@ export const Block: FC<Props> = ({ nodeId }) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div data-block className={clsx(typeCssClass, classes.wrapper)}>
+        <div
+          data-block
+          className={clsx(typeCssClass, classes.wrapper, "flex gap-[5px]")}
+        >
           <div
             onClick={select}
             className={clsx(
@@ -76,6 +81,14 @@ export const Block: FC<Props> = ({ nodeId }) => {
           >
             {renderer(node)}
           </div>
+          <Button
+            data-drag
+            variant={"outline"}
+            size={"icon"}
+            className={classes.drag_button}
+          >
+            <Grip />
+          </Button>
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>

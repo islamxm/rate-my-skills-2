@@ -1,5 +1,24 @@
 .wrapper {
+  position: relative;
+
   .highlight_disabled:not(:hover):not(.selected) {
     outline-color: transparent !important;
+  }
+
+  .drag_button {
+    position: absolute;
+    right: 0;
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 3;
+    top: -18px;
+    right: -8px;
+    cursor: grab;
+  }
+
+  &:hover {
+    .drag_button {
+      opacity: 1;
+    }
   }
 }
