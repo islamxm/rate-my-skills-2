@@ -1,10 +1,9 @@
 import type { MOMRaw } from "@/mom/types";
 import { useEffect, useRef, useState } from "react";
-import { useDocumentActions } from "./useDocumentActions";
 import type { TextareaAutosizeProps } from "react-textarea-autosize";
-import { useNodeSelection } from "./useNodeSelection";
 import type { Tabs } from "radix-ui";
 import { MOM } from "@/mom";
+import { useDocumentActions, useNodeSelection } from "@/hooks";
 
 type ViewType = "preview" | "raw";
 

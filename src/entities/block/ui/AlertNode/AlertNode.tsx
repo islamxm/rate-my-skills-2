@@ -1,6 +1,4 @@
 import type { FC, ReactNode } from "react";
-import { useEditor, useNode } from "../../hooks";
-import { MOM } from "../../mom";
 import { FormatToolbar } from "../FormatToolbar/FormatToolbar";
 import type { MOMAlert } from "@/mom/types";
 import clsx from "clsx";
@@ -11,6 +9,9 @@ import {
   OctagonAlert,
   TriangleAlert,
 } from "lucide-react";
+import { useNode } from "@/hooks";
+import { useEditor } from "../../lib/useEditor";
+import { MOM } from "@/mom";
 
 const alertVariantOptions: Record<
   MOMAlert["variant"],

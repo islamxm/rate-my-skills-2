@@ -1,6 +1,6 @@
+import { useDocumentActions } from "@/hooks";
 import type { MOMImage } from "@/mom/types";
 import { useState } from "react";
-import { useDocumentActions } from "./useDocumentActions";
 import { toast } from "sonner";
 
 /**
