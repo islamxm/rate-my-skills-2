@@ -5,10 +5,7 @@ import type { CursorPosition, SelectionFragment } from "./editor.types";
 
 // есть проблема с обьединением одинаковых нод, из за этого при хаотичном форматировании появлюятся много фрагментов одного и того же
 /** изменение стиля у текстовых нод */
-export function applyFormat(
-  format: keyof MOMTextMarks,
-  nodes: Array<MOMAllContent>,
-) {
+export function applyFormat(format: keyof MOMTextMarks, nodes: Array<MOMAllContent>) {
   const selection = window.getSelection();
   if (!selection || isNothingSelected(selection)) return;
   const range = getRange(selection);
@@ -95,10 +92,7 @@ function getRangeContainedElements(range: Range) {
 
   const selectedElements = new Set<HTMLElement>();
   const iter = document.createNodeIterator(rootElement, NodeFilter.SHOW_TEXT, {
-    acceptNode: (node) =>
-      range.intersectsNode(node)
-        ? NodeFilter.FILTER_ACCEPT
-        : NodeFilter.FILTER_REJECT,
+    acceptNode: (node) => (range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT),
   });
 
   let currentNode;
@@ -118,15 +112,9 @@ function getRangeContainedElements(range: Range) {
   return Array.from(selectedElements);
 }
 
-function wrapRawTextNode(
-  textNode: Text,
-  blockNode: HTMLElement,
-): HTMLSpanElement {
+function wrapRawTextNode(textNode: Text, blockNode: HTMLElement): HTMLSpanElement {
   const parentId = blockNode.getAttribute("data-id") ?? "";
-  const newMomText = MOM.Engine.createText(
-    textNode.textContent ?? "",
-    parentId,
-  );
+  const newMomText = MOM.Engine.createText(textNode.textContent ?? "", parentId);
 
   const span = document.createElement("span");
 
@@ -165,21 +153,14 @@ function getBlockNode(element: Element) {
 }
 
 /** получение фрагментов для корректной модификации элементов */
-function getFragments(
-  range: Range,
-  containedElements: Array<HTMLElement>,
-): Array<SelectionFragment> {
+function getFragments(range: Range, containedElements: Array<HTMLElement>): Array<SelectionFragment> {
   return containedElements.map((el) => {
     const fullText = el.textContent ?? "";
     const elRange = document.createRange();
     elRange.selectNodeContents(el);
 
-    const startOffset =
-      el === range.startContainer.parentElement ? range.startOffset : 0;
-    const endOffset =
-      el === range.endContainer.parentElement
-        ? range.endOffset
-        : fullText.length;
+    const startOffset = el === range.startContainer.parentElement ? range.startOffset : 0;
+    const endOffset = el === range.endContainer.parentElement ? range.endOffset : fullText.length;
 
     return {
       spanId: el.dataset.id ?? "",
@@ -243,10 +224,7 @@ function buildNodes(opt: {
   return result;
 }
 
-function modifiedBlock(opt: {
-  allNodes: Array<MOMText>;
-  nodesBySpanId: Map<string, MOMText[]>;
-}): Array<MOMText> {
+function modifiedBlock(opt: { allNodes: Array<MOMText>; nodesBySpanId: Map<string, MOMText[]> }): Array<MOMText> {
   const { allNodes, nodesBySpanId } = opt;
   const result: MOMText[] = [];
 
@@ -261,10 +239,7 @@ function modifiedBlock(opt: {
 }
 
 /** получаем ноды детей блок ноды в виде MOM из обьекта стора MOMMap и складываем в массив */
-function getExistingNodes(
-  nodes: Array<MOMAllContent>,
-  children: HTMLCollection,
-) {
+function getExistingNodes(nodes: Array<MOMAllContent>, children: HTMLCollection) {
   const result: Array<MOMText> = [];
 
   for (const child of children) {
@@ -286,10 +261,7 @@ function getExistingNodes(
   return result;
 }
 
-function normalizeBlockChildren(
-  blockNode: HTMLElement,
-  nodes: Array<MOMAllContent>,
-): Array<MOMAllContent> {
+function normalizeBlockChildren(blockNode: HTMLElement, nodes: Array<MOMAllContent>): Array<MOMAllContent> {
   let modified = false;
   const result = [...nodes];
 
@@ -356,10 +328,7 @@ export function saveCursor(element: HTMLElement): CursorPosition | null {
 }
 
 /** для восстановления позиции каретки */
-export function restoreCursor(
-  element: HTMLElement,
-  position: CursorPosition | null,
-): void {
+export function restoreCursor(element: HTMLElement, position: CursorPosition | null): void {
   if (!position) return;
 
   const selection = window.getSelection();
@@ -444,5 +413,5 @@ export const Editor = {
   saveCursor,
   restoreCursor,
   getCssClassByNode,
-  shoulSkipUpdateState
+  shoulSkipUpdateState,
 } as const;

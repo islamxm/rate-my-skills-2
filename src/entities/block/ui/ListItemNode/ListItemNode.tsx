@@ -46,6 +46,7 @@ export const ListItemNode: FC<Props> = ({
         data-id={node.id}
         data-type={node.type}
         data-parent-id={node.parentId ?? ""}
+        data-editable
       />
     </>
   );

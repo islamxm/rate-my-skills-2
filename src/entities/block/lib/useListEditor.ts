@@ -1,10 +1,8 @@
 import { useRef, type HTMLProps, useEffect } from "react";
-import { GlobalShortcuts, shortcut } from "@/utils/shortcut";
+import { shortcut } from "@/utils/shortcut";
 import type { MOMAllContent, MOMTextMarks } from "@/mom/types";
 import { useCursor, useDocumentActions, useNodeSelection, useSelectionActions } from "@/hooks";
 import { MOM } from "@/mom";
-
-const globalShortcutsList = Object.entries(GlobalShortcuts);
 
 // рассмотреть в будущем фиксирования focusedId конкретного li в сторе для предсказуемого управления кареткой
 
@@ -19,27 +17,28 @@ export function useListEditor(
 ) {
   const { commitInlineEdit } = useDocumentActions();
   const { focuseNode, blur } = useSelectionActions();
-  const { isFocused } = useNodeSelection(listNodeId);
+  const { isFocused: isListItemFocused } = useNodeSelection(nodeId);
+  const { isSelected: isListSelected} = useNodeSelection(listNodeId)
   const ref = useRef<HTMLLIElement>(null);
   const { saveCursor, restoreCursor } = useCursor<HTMLLIElement>(ref);
-  const currentHtml = useRef<string>(undefined);
 
   useEffect(() => {
     if (!ref.current) return;
-
-    const html =
-      currentHtml.current ?? MOM.Serializer.momToHTML(children, nodeId);
-    currentHtml.current = undefined;
-    if (ref.current.innerHTML === html) return;
+    const html = MOM.Serializer.momToHTML(children, nodeId);
     ref.current.innerHTML = html;
-    if (isFocused) {
-      restoreCursor();
-    }
-  }, [children, nodeId, restoreCursor, isFocused]);
+    // if (isFocused) {
+    //   restoreCursor();
+    // }
+  }, [children, nodeId, restoreCursor]);
+
+
+  useEffect(() => {
+    
+  }, [isListFocused])
+
 
   const save = () => {
     if (!ref.current) return;
-    currentHtml.current = undefined;
     const nodes = MOM.Parser.domToMom(ref.current);
     const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
       MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), nodeId),
@@ -68,7 +67,6 @@ export function useListEditor(
     saveCursor();
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
-    currentHtml.current = undefined;
 
     const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
       MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), nodeId),
@@ -97,7 +95,6 @@ export function useListEditor(
     if (target.textContent === "") {
       target.innerHTML = "";
     }
-    currentHtml.current = ref.current.innerHTML;
   };
 
   /** сброс браузерных стилей перед вводом */
@@ -118,12 +115,7 @@ export function useListEditor(
   }, []);
 
   const onKeyboardEvent = (e: React.KeyboardEvent<HTMLLIElement>) => {
-    shortcut(
-      e.nativeEvent,
-      ["Ctrl", "U"],
-      () => applyFormat("lineThrough"),
-      true,
-    );
+    shortcut(e.nativeEvent, ["Ctrl", "U"], () => applyFormat("lineThrough"), true);
     shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true);
     shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true);
     shortcut(e.nativeEvent, ["Backspace"], () => {
@@ -133,7 +125,6 @@ export function useListEditor(
         deleteItem();
       }
     });
-
     // два модификатора без обычной key функция shortcut не поддерживает, надо доработать
     if (e.code === "Enter" && e.shiftKey) {
       e.preventDefault();
@@ -141,21 +132,26 @@ export function useListEditor(
       createItem();
       return;
     }
-    // одиночные обычные key тоже не поддерживаются shortcut
-    if (e.code === "ArrowUp") {
-      save();
-      focusItem(index - 1);
-      return;
-    }
-    if (e.code === "ArrowDown") {
-      save();
-      focusItem(index + 1);
-      return;
-    }
+    if(e.code === "Tab" && e.shiftKey) {
 
-    globalShortcutsList.forEach(([_, value]) =>
-      shortcut(e.nativeEvent, value, save, true),
-    );
+      return;
+    }
+    if(e.code === "Tab") {
+      // 
+      return;
+    }
+    
+    // одиночные обычные key тоже не поддерживаются shortcut
+    // if (e.code === "ArrowUp") {
+    //   save();
+    //   focusItem(index - 1);
+    //   return;
+    // }
+    // if (e.code === "ArrowDown") {
+    //   save();
+    //   focusItem(index + 1);
+    //   return;
+    // }
   };
 
   useEffect(() => {

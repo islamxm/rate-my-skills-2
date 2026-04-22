@@ -28,6 +28,7 @@ export const ParagraphNode: FC<Props> = ({ nodeId }) => {
         data-id={nodeId}
         data-type={node.type}
         data-parent-id={node.parentId ?? ""}
+        data-editable
       />
     </>
   );

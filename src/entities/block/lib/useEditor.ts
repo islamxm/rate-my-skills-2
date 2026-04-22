@@ -20,35 +20,29 @@ type ParseType = "deep" | "plain";
  * @param {boolean} disableFormatting Отключение форматирование в редактируемой ноде
  * @returns
  */
-export function useEditor<T extends HTMLElement>(
-  node: MOMAllContent,
-  parseType: ParseType = "deep",
-  disableFormatting?: boolean,
-) {
+export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType: ParseType = "deep", disableFormatting?: boolean) {
   const children = useChildren(node.id);
   const { focuseNode, blur } = useSelectionActions();
   const { isFocused } = useNodeSelection(node.id);
   const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
-  const currentHtml = useRef<string>(undefined);
 
+  // синхронизация при изменении стейта
   useEffect(() => {
-    if (!ref.current) return;
-    let html: string = "";
-    if (parseType === "deep") {
-      html = currentHtml.current ?? MOM.Serializer.momToHTML(children, node.id);
-    }
+    if (!ref.current || !node) return;
+    let html = "";
     if (parseType === "plain" && "value" in node) {
-      html = currentHtml.current ?? node.value ?? ref.current.textContent;
+      html = node.value;
     }
-    if (ref.current.innerHTML === html) return;
+    if (parseType === "deep") {
+      html = MOM.Serializer.momToHTML(children, node.id);
+    }
     ref.current.innerHTML = html;
-    currentHtml.current = undefined;
     if (isFocused) {
       restoreCursor();
     }
-  }, [children, parseType, node, restoreCursor, isFocused]);
+  }, [children, parseType, node, isFocused, restoreCursor]);
 
   useEffect(() => {
     if (isFocused) {
@@ -59,12 +53,8 @@ export function useEditor<T extends HTMLElement>(
   /** сохранение результата редактирования (данные беруться из dom) */
   const save = () => {
     if (!ref.current) return;
-    currentHtml.current = undefined;
     if (parseType === "plain" && "value" in node) {
-      const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
-        ref.current.textContent,
-        node.value,
-      );
+      const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(ref.current.textContent, node.value);
       if (canSkipUpdate) return;
       updateNode({
         nodeId: node.id,
@@ -74,10 +64,7 @@ export function useEditor<T extends HTMLElement>(
     if (parseType === "deep") {
       const nodes = MOM.Parser.domToMom(ref.current);
 
-      const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
-        MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), node.id),
-        MOM.Serializer.momToHTML(nodes, node.id),
-      );
+      const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(MOM.Serializer.momToHTML(children, node.id), MOM.Serializer.momToHTML(nodes, node.id));
 
       if (nodes.length === 0 || canSkipUpdate) return;
       commitInlineEdit({ nodeId: node.id, nodes });
@@ -98,8 +85,8 @@ export function useEditor<T extends HTMLElement>(
   /** обработка действий которые идут через клавишу */
   const onKeyboardEvent = (e: React.KeyboardEvent) => {
     shortcut(e.nativeEvent, ["Ctrl", "U"], () => applyFormat("lineThrough"), true);
-    shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true)
-    shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true)
+    shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true);
+    shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true);
   };
 
   /** чистим от форматирования вставляемый текст */
@@ -115,7 +102,6 @@ export function useEditor<T extends HTMLElement>(
     saveCursor();
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
-    currentHtml.current = undefined;
 
     const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
       MOM.Serializer.momToHTML(MOM.Parser.domToMom(ref.current), node.id),
@@ -137,7 +123,6 @@ export function useEditor<T extends HTMLElement>(
     if (target.textContent === "") {
       target.innerHTML = "";
     }
-    currentHtml.current = ref.current.innerHTML;
   };
 
   /** сброс браузерных стилей перед вводом */

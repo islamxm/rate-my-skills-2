@@ -72,6 +72,7 @@ export const RawNode: FC<Props> = ({ nodeId }) => {
             ref={ref}
             {...fieldProps}
             className="p-[10px] resize-none outline-none border-none w-full"
+            data-editable
           />
         </div>
       )}
