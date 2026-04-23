@@ -104,6 +104,8 @@ export const GlobalShortcuts = {
   REDO: ["Ctrl", "Shift", "Z"],
   SELECT_ALL_BLOCKS: ["Ctrl", "Shift", "A"],
   DELETE_SELECTED_BLOCKS: ["Shift", "Ctrl", "Backspace"],
+  COPY_NODE: ["Shift", "Ctrl", "C"],
+  PASTE_NODE: ["Shift", "Ctrl", "V"],
   UNDO: ["Ctrl", "Z"],
   REDO_LEGACY: ["Ctrl", "Y"],
   SAVE_DOCUMENT: ["Ctrl", "S"],

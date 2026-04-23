@@ -1,61 +1,29 @@
-import { createSlice, nanoid, type PayloadAction } from '@reduxjs/toolkit';
-import type { MOMAllContent, MOMDocument } from '../../mom/types';
-import { type BatchOp, type EngineResult, type MOMOperation } from '../../mom/engine/engine.types';
-import { MOM } from '../../mom';
-import type { AppThunk } from '../config';
-import { selectionStoreActions } from './selectionSlice';
+import { createSlice, nanoid, type PayloadAction } from "@reduxjs/toolkit";
+import type { MOMAllContent, MOMDocument } from "../../mom/types";
+import { type BatchOp, type EngineResult, type MOMOperation } from "../../mom/engine/engine.types";
+import { MOM } from "../../mom";
+import type { AppThunk } from "../config";
+import { selectionStoreActions } from "./selectionSlice";
 
 type UndoStack = {
   past: MOMOperation[];
   future: MOMOperation[];
 };
 
-// const mockDoc: MOMDocument = {
-//   rootOrder: ['qo8wMSGBEtVOOvIVchSm1', 'kYvBwjqAB885gn6TdV_W_', 'JZlojwg8ZySLiX4z0gtqM'],
-//   nodes: {
-//     qo8wMSGBEtVOOvIVchSm1: {
-//       parentId: null,
-//       id: 'qo8wMSGBEtVOOvIVchSm1',
-//       type: 'heading',
-//       depth: 1,
-//       value: 'Title',
-//     },
-//     kYvBwjqAB885gn6TdV_W_: {
-//       parentId: null,
-//       id: 'kYvBwjqAB885gn6TdV_W_',
-//       type: 'paragraph',
-//       children: ['2q2W3z7JfNfwID0NyV0_K'],
-//     },
-//     '2q2W3z7JfNfwID0NyV0_K': {
-//       parentId: 'kYvBwjqAB885gn6TdV_W_',
-//       id: '2q2W3z7JfNfwID0NyV0_K',
-//       type: 'text',
-//       value: 'Description',
-//       marks: {},
-//     },
-//     JZlojwg8ZySLiX4z0gtqM: {
-//       parentId: null,
-//       id: 'JZlojwg8ZySLiX4z0gtqM',
-//       type: 'image',
-//       url: '',
-//       alt: '',
-//       title: '',
-//       linkUrl: '',
-//     },
-//   },
-//   groups: {},
-// };
-
 type InitialState = {
   doc: MOMDocument;
   history: UndoStack;
-  copiedNode: MOMAllContent | undefined;
+  copiedNode: {
+    nodeId: string;
+    nodes: Array<{ node: MOMAllContent; parentId: string | null }>;
+    isPasted: boolean;
+  } | null;
 };
 
 const pNode = MOM.Engine.createParagraph(null);
-const textNode1 = MOM.Engine.createText('1 part of text,', pNode.id);
-const textNode2 = MOM.Engine.createText(' 2 part of text', pNode.id);
-const textNode3 = MOM.Engine.createText(' 3 part', pNode.id);
+const textNode1 = MOM.Engine.createText("1 part of text,", pNode.id);
+const textNode2 = MOM.Engine.createText(" 2 part of text", pNode.id);
+const textNode3 = MOM.Engine.createText(" 3 part", pNode.id);
 pNode.children = [textNode1.id, textNode2.id, textNode3.id];
 
 const initialState: InitialState = {
@@ -65,7 +33,7 @@ const initialState: InitialState = {
     groups: {},
   },
   history: { past: [], future: [] },
-  copiedNode: undefined,
+  copiedNode: null,
 };
 
 const MAX_HISTORY_DEPTH = 100;
@@ -81,7 +49,7 @@ function commitResult(state: InitialState, result: { doc: MOMDocument; op: MOMOp
 }
 
 export const documentSlice = createSlice({
-  name: 'document',
+  name: "document",
   initialState,
   reducers: {
     insertNode: (
@@ -120,6 +88,7 @@ export const documentSlice = createSlice({
           index: o.index ?? state.doc.rootOrder.length + ind,
         })),
       });
+
       commitResult(state, result);
     },
     removeNode: (
@@ -238,7 +207,7 @@ export const documentSlice = createSlice({
       let currentDoc = doc;
 
       const parentNode = currentDoc.nodes[nodeId];
-      if ('children' in parentNode) {
+      if ("children" in parentNode) {
         const oldChildIds = parentNode.children as string[];
         oldChildIds.forEach((childId) => {
           const result = MOM.Engine.removeNode({
@@ -261,13 +230,19 @@ export const documentSlice = createSlice({
         ops.push(result.op);
       });
 
-      const batchOp: BatchOp = { type: 'batch', ops };
+      const batchOp: BatchOp = { type: "batch", ops };
       commitResult(state, { doc: currentDoc, op: batchOp });
     },
 
     // должен копировать вместе со всеми содержимыми, переписать
-    copyNode: (state, action: PayloadAction<MOMAllContent | undefined>) => {
+    copyNode: (state, action: PayloadAction<InitialState["copiedNode"]>) => {
       state.copiedNode = action.payload;
+    },
+
+    copyPasted: (state) => {
+      if (state.copiedNode) {
+        state.copiedNode.isPasted = true;
+      }
     },
 
     updateRootOrder: (state, action: PayloadAction<Array<string>>) => {
@@ -279,7 +254,7 @@ export const documentSlice = createSlice({
       state.doc.nodes = {};
       state.doc.rootOrder = [];
       state.history = { past: [], future: [] };
-      state.copiedNode = undefined;
+      state.copiedNode = null;
     },
   },
 });
@@ -311,7 +286,7 @@ export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
   const id = nanoid();
 
   switch (type) {
-    case 'paragraph':
+    case "paragraph":
       dispatch(
         documentStoreActions.insertNode({
           node: { ...MOM.Engine.createParagraph(currentNode.parentId), id },
@@ -320,7 +295,7 @@ export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
         }),
       );
       break;
-    case 'blockquote':
+    case "blockquote":
       dispatch(
         documentStoreActions.insertNode({
           node: { ...MOM.Engine.createBlockquote(currentNode.parentId), id },
@@ -329,7 +304,7 @@ export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
         }),
       );
       break;
-    case 'heading':
+    case "heading":
       dispatch(
         documentStoreActions.insertNode({
           node: {
@@ -341,7 +316,7 @@ export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
         }),
       );
       break;
-    case 'alert':
+    case "alert":
       dispatch(
         documentStoreActions.insertNode({
           node: {
@@ -353,7 +328,7 @@ export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
         }),
       );
       break;
-    case 'list': {
+    case "list": {
       const listNode = MOM.Engine.createList(currentNode.ordered);
       const listItemNode = MOM.Engine.createListItem(listNode.id);
       const index = rootOrder.indexOf(selectedId) + 1;
@@ -387,6 +362,39 @@ export const deleteSelectedBlocksThunk = (): AppThunk => (dispatch, getState) =>
   const newSelectId = firstSelectedIndex === 0 ? rootOrder[lastSelectedIndex + 1] : rootOrder[firstSelectedIndex - 1];
 
   dispatch(selectionStoreActions.selectAndFocusNode(newSelectId));
+};
+
+export const copyNodeThunk =
+  (nodeId?: string): AppThunk =>
+  (dispatch, getState) => {
+    const state = getState();
+    const nodes = state.document.doc.nodes;
+
+    const copyId = nodeId ?? state.selection.selectedIds[0];
+    if (!copyId) return;
+
+    const rootNode = nodes[copyId];
+
+    const result = MOM.Editor.copyNode(nodes, rootNode);
+
+    dispatch(documentStoreActions.copyNode({ nodeId: copyId, nodes: result, isPasted: false }));
+  };
+
+export const pasteNodeThunk = (): AppThunk => (dispatch, getState) => {
+  const state = getState();
+  const copyData = state.document.copiedNode;
+  if (!copyData) return;
+  const copiedNode = state.document.doc.nodes[copyData.nodeId];
+  let copiedNodes = state.document.copiedNode?.nodes;
+
+  if (copyData.isPasted) {
+    copiedNodes = MOM.Editor.copyNode(state.document.doc.nodes, copiedNode);
+  }
+
+  if (!copiedNodes || copiedNodes.length === 0) return;
+
+  dispatch(documentStoreActions.insertNodes({ ops: copiedNodes }));
+  dispatch(documentStoreActions.copyPasted());
 };
 
 export const documentStoreActions = documentSlice.actions;

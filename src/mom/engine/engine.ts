@@ -1,26 +1,9 @@
 import { produce } from "immer";
 import { nanoid } from "nanoid";
 import type { MOMAllContent, MOMDocument, MOMGroupMeta } from "../types";
-import type {
-  BatchOp,
-  EngineResult,
-  GroupOp,
-  InsertOp,
-  MOMOperation,
-  MoveOp,
-  RemoveOp,
-  RenameGroupOp,
-  UngroupOp,
-  UpdateOp,
-} from "./engine.types";
+import type { BatchOp, EngineResult, GroupOp, InsertOp, MOMOperation, MoveOp, RemoveOp, RenameGroupOp, UngroupOp, UpdateOp } from "./engine.types";
 import { isParentNode } from "../validator/typeGuards";
-import {
-  getDescendants,
-  getGroup,
-  getNodeById,
-  getSiblingNodes,
-  isDescendantOf,
-} from "../selector/selectors";
+import { getDescendants, getGroup, getNodeById, getSiblingNodes, isDescendantOf } from "../selector/selectors";
 import { canInsert } from "../validator/validator";
 
 import {
@@ -39,30 +22,21 @@ import {
   create,
 } from "./engine.fabric";
 
-export function insertNode(opt: {
-  doc: MOMDocument;
-  node: MOMAllContent;
-  parentId: string | null;
-  index: number;
-}): EngineResult {
+export function insertNode(opt: { doc: MOMDocument; node: MOMAllContent; parentId: string | null; index: number }): EngineResult {
   const { doc, node, parentId, index } = opt;
 
-  const parentType =
-    parentId === null ? "root" : getNodeById(parentId, doc.nodes)?.type;
+  const parentType = parentId === null ? "root" : getNodeById(parentId, doc.nodes)?.type;
 
   if (!parentType) {
     throw new Error(`insertNode: родитель "${parentId}" не найден`);
   }
 
   if (!canInsert(parentType, node.type)) {
-    throw new Error(
-      `insertNode: "${node.type}" не может быть ребёнком "${parentType}"`,
-    );
+    throw new Error(`insertNode: "${node.type}" не может быть ребёнком "${parentType}"`);
   }
 
   const newDoc = produce(doc, (draft) => {
     draft.nodes[node.id] = node;
-
     if (parentId === null) {
       draft.rootOrder.splice(index, 0, node.id);
     } else {
@@ -112,22 +86,16 @@ export function insertNodes(opt: {
   };
 }
 
-export function removeNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-}): EngineResult {
+export function removeNode(opt: { doc: MOMDocument; nodeId: string }): EngineResult {
   const { doc, nodeId } = opt;
 
   const node = getNodeById(nodeId, doc.nodes);
   if (!node) {
-    throw new Error("Указанной ноды нет");
+    throw new Error(`removeNode: Ноды с id=${nodeId} нет`);
   }
   const parentId = node.parentId;
 
-  const siblings =
-    parentId === null
-      ? doc.rootOrder
-      : ((doc.nodes[parentId] as any).children as string[]);
+  const siblings = parentId === null ? doc.rootOrder : ((doc.nodes[parentId] as any).children as string[]);
   const index = siblings.indexOf(nodeId);
   const descendantIds = getDescendants(doc.nodes, nodeId).map((n) => n.id);
 
@@ -155,10 +123,7 @@ export function removeNode(opt: {
   return { op, doc: newDoc };
 }
 
-export function removeNodes(opt: {
-  doc: MOMDocument;
-  nodeIds: Array<string>;
-}): EngineResult {
+export function removeNodes(opt: { doc: MOMDocument; nodeIds: Array<string> }): EngineResult {
   const { doc, nodeIds } = opt;
   let currentDoc = doc;
 
@@ -190,27 +155,19 @@ export function removeNodes(opt: {
   };
 }
 
-export function updateNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-  patch: Partial<MOMAllContent>;
-}): EngineResult {
+export function updateNode(opt: { doc: MOMDocument; nodeId: string; patch: Partial<MOMAllContent> }): EngineResult {
   const { doc, nodeId, patch } = opt;
 
   const node = getNodeById(nodeId, doc.nodes);
 
   if (!node) {
-    throw new Error("Указанная нода не найдена");
+    throw new Error(`updateNode: Ноды с id=${nodeId} нет`);
   }
 
   if (patch.type !== undefined && node.type !== patch.type) {
-    throw new Error(
-      "Нельзя менять тип через updateNode, используйте convertNode",
-    );
+    throw new Error("updateNode: Нельзя менять тип через updateNode, используйте convertNode");
   }
-  const prevPatch = Object.fromEntries(
-    Object.keys(patch).map((k) => [k, (node as any)[k]]),
-  ) as Partial<MOMAllContent>;
+  const prevPatch = Object.fromEntries(Object.keys(patch).map((k) => [k, (node as any)[k]])) as Partial<MOMAllContent>;
 
   const newDoc = produce(doc, (draft) => {
     // @ts-ignore
@@ -227,31 +184,23 @@ export function updateNode(opt: {
   return { op, doc: newDoc };
 }
 
-export function moveNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-  toParentId: string | null;
-  toIndex: number;
-}): EngineResult {
+export function moveNode(opt: { doc: MOMDocument; nodeId: string; toParentId: string | null; toIndex: number }): EngineResult {
   const { doc, nodeId, toParentId, toIndex } = opt;
 
   const node = getNodeById(nodeId, doc.nodes);
 
   if (!node) {
-    throw new Error("Указанная нода не найдена");
+    throw new Error(`moveNode: Ноды с id=${nodeId} нет`);
   }
 
   const fromParentId = node.parentId;
-  const fromSiblings =
-    fromParentId === null
-      ? doc.rootOrder
-      : ((doc.nodes[fromParentId] as any).children as string[]);
+  const fromSiblings = fromParentId === null ? doc.rootOrder : ((doc.nodes[fromParentId] as any).children as string[]);
   const fromIndex = fromSiblings.indexOf(nodeId);
 
   if (toParentId !== null) {
     const toParent = getNodeById(toParentId, doc.nodes);
     if (!toParent) {
-      throw new Error("Такого родителя нет");
+      throw new Error("moveNode: Такого родителя нет");
     }
     if (
       isDescendantOf({
@@ -260,10 +209,10 @@ export function moveNode(opt: {
         potentialAncestorId: nodeId,
       })
     ) {
-      throw new Error("Нельзя переместить ноду внутрь собственного потомка");
+      throw new Error("moveNode: Нельзя переместить ноду внутрь собственного потомка");
     }
     if (!isParentNode(toParent)) {
-      throw new Error("Нода не может иметь детей");
+      throw new Error("moveNode: Нода не может иметь детей");
     }
   }
 
@@ -274,19 +223,12 @@ export function moveNode(opt: {
       (draft.nodes[fromParentId] as any).children.splice(fromIndex, 1);
     }
     draft.nodes[nodeId].parentId = toParentId;
-    const adjustedIndex =
-      fromParentId === toParentId && toIndex > fromIndex
-        ? toIndex - 1
-        : toIndex;
+    const adjustedIndex = fromParentId === toParentId && toIndex > fromIndex ? toIndex - 1 : toIndex;
 
     if (toParentId === null) {
       draft.rootOrder.splice(adjustedIndex, 0, nodeId);
     } else {
-      (draft.nodes[toParentId] as any).children.splice(
-        adjustedIndex,
-        0,
-        nodeId,
-      );
+      (draft.nodes[toParentId] as any).children.splice(adjustedIndex, 0, nodeId);
     }
   });
   const op: MoveOp = {
@@ -301,11 +243,7 @@ export function moveNode(opt: {
   return { op, doc: newDoc };
 }
 
-export function groupNodes(opt: {
-  doc: MOMDocument;
-  nodeIds: string[];
-  label: string;
-}): EngineResult {
+export function groupNodes(opt: { doc: MOMDocument; nodeIds: string[]; label: string }): EngineResult {
   const { doc, nodeIds, label } = opt;
 
   if (nodeIds.length < 2) {
@@ -322,13 +260,9 @@ export function groupNodes(opt: {
     }
   }
 
-  const indices = nodeIds
-    .map((id) => doc.rootOrder.indexOf(id))
-    .sort((a, b) => a - b);
+  const indices = nodeIds.map((id) => doc.rootOrder.indexOf(id)).sort((a, b) => a - b);
 
-  const isContiguous = indices.every(
-    (idx, i) => i === 0 || idx === indices[i - 1] + 1,
-  );
+  const isContiguous = indices.every((idx, i) => i === 0 || idx === indices[i - 1] + 1);
   if (!isContiguous) {
     throw new Error("groupNodes: ноды должны быть смежными в документе");
   }
@@ -358,10 +292,7 @@ export function groupNodes(opt: {
   return { op, doc: newDoc };
 }
 
-export function ungroupNodes(opt: {
-  doc: MOMDocument;
-  groupId: string;
-}): EngineResult {
+export function ungroupNodes(opt: { doc: MOMDocument; groupId: string }): EngineResult {
   const { doc, groupId } = opt;
 
   const group = getGroup(doc, groupId);
@@ -373,9 +304,7 @@ export function ungroupNodes(opt: {
     .filter((node) => node.groupId === groupId)
     .map((node) => node.id);
 
-  const indices = nodeIds
-    .map((id) => doc.rootOrder.indexOf(id))
-    .sort((a, b) => a - b);
+  const indices = nodeIds.map((id) => doc.rootOrder.indexOf(id)).sort((a, b) => a - b);
 
   const newDoc = produce(doc, (draft) => {
     nodeIds.forEach((nodeId) => {
@@ -396,11 +325,7 @@ export function ungroupNodes(opt: {
   return { op, doc: newDoc };
 }
 
-export function renameGroup(opt: {
-  doc: MOMDocument;
-  groupId: string;
-  label: string;
-}): EngineResult {
+export function renameGroup(opt: { doc: MOMDocument; groupId: string; label: string }): EngineResult {
   const { doc, groupId, label } = opt;
 
   const group = getGroup(doc, groupId);
@@ -424,10 +349,7 @@ export function renameGroup(opt: {
   return { op, doc: newDoc };
 }
 
-export function applyOp(opt: {
-  doc: MOMDocument;
-  op: MOMOperation;
-}): MOMDocument {
+export function applyOp(opt: { doc: MOMDocument; op: MOMOperation }): MOMDocument {
   const { doc, op } = opt;
 
   switch (op.type) {
@@ -481,11 +403,7 @@ export function applyOp(opt: {
       }).doc;
 
     case "batch":
-      return op.ops.reduce(
-        (currentDoc: any, currentOp: any) =>
-          applyOp({ doc: currentDoc, op: currentOp }),
-        doc,
-      );
+      return op.ops.reduce((currentDoc: any, currentOp: any) => applyOp({ doc: currentDoc, op: currentOp }), doc);
 
     default:
       throw new Error(`applyOp: неизвестный тип операции`);

@@ -1,7 +1,8 @@
 import { shallowEqual } from "react-redux";
 import { MOM } from "..";
-import type { MOMAlert, MOMAllContent, MOMText, MOMTextMarks } from "../types";
+import type { MOMAlert, MOMAllContent, MOMMap, MOMText, MOMTextMarks } from "../types";
 import type { CursorPosition, SelectionFragment } from "./editor.types";
+import { nanoid } from "nanoid";
 
 // есть проблема с обьединением одинаковых нод, из за этого при хаотичном форматировании появлюятся много фрагментов одного и того же
 /** изменение стиля у текстовых нод */
@@ -424,10 +425,35 @@ export function setCursorToEnd(el: HTMLElement) {
   range.selectNodeContents(el);
   range.collapse(false);
   const selection = window.getSelection();
-  if(!selection || !selection.rangeCount) return;
+  if (!selection || !selection.rangeCount) return;
   selection.removeAllRanges();
   selection.addRange(range);
 }
+
+const copyNode = (nodes: MOMMap, node: MOMAllContent) => {
+  const newNodes: MOMMap = {};
+
+  const cloneRec = (currentId: string, newParentId: string | null): string => {
+    const originalNode = nodes[currentId];
+    if (!originalNode) return "";
+    const newNodeId = nanoid();
+    const newNode: MOMAllContent = {
+      ...originalNode,
+      id: newNodeId,
+      parentId: newParentId,
+      ...("children" in originalNode ? { children: [] } : {}),
+    };
+    newNodes[newNodeId] = newNode;
+    if ("children" in originalNode && "children" in newNode) {
+      // newNode.children = originalNode.children.map((childId) => cloneRec(childId, newNodeId)).filter((id) => id !== "");
+      originalNode.children.forEach((childId) => cloneRec(childId, newNodeId));
+    }
+    return newNodeId;
+  };
+  cloneRec(node.id, node.parentId);
+  const result = Object.entries(newNodes).map(([_, node]) => ({ node, parentId: node.parentId }));
+  return result;
+};
 
 export const Editor = {
   applyFormat,
@@ -438,5 +464,6 @@ export const Editor = {
   getCssClassByNode,
   shoulSkipUpdateState,
   pastePlainText,
-  setCursorToEnd
+  setCursorToEnd,
+  copyNode,
 } as const;

@@ -8,7 +8,6 @@ import { useNode, useUI } from "@/hooks";
 import { useDocumentActions } from "@/hooks/useDocumentActions";
 import { useNodeSelection } from "@/hooks/useNodeSelection";
 import { useSelectionActions } from "@/hooks/useSelectionActions";
-import { toast } from "sonner";
 import { getBlockColors } from "../../lib/getBlockColors";
 import type { MOMBlockNodeType } from "@/mom/types";
 import { renderer } from "../../lib/renderer";
@@ -39,9 +38,14 @@ export const Block: FC<Props> = ({ nodeId }) => {
 
   const typeCssClass = MOM.Editor.getCssClassByNode(node);
 
+  const onContextMenuOpened = (opened: boolean) => {
+    if (!opened) return;
+    selectNode(nodeId);
+  };
+
   return (
-    <ContextMenu>
-      <ContextMenuTrigger>
+    <ContextMenu onOpenChange={onContextMenuOpened}>
+      <ContextMenuTrigger onClick={() => console.log("test")}>
         <div data-block data-id={nodeId} className={clsx(typeCssClass, classes.wrapper, "flex gap-[5px]")}>
           <div
             onClick={select}
@@ -72,12 +76,7 @@ export const Block: FC<Props> = ({ nodeId }) => {
         <ContextMenuItem>
           <BrushCleaning /> Clear
         </ContextMenuItem>
-        <ContextMenuItem
-          onClick={() => {
-            copyNode(node);
-            toast.success("Block is copied");
-          }}
-        >
+        <ContextMenuItem onClick={() => copyNode(nodeId)}>
           <Copy /> Copy Block
         </ContextMenuItem>
         <ContextMenuItem>

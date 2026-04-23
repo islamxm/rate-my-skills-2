@@ -2,21 +2,18 @@ import type { MOMAllContent } from "@/mom/types";
 import { useDispatch } from "@/shared/lib";
 import {
   addLinkThunk,
+  copyNodeThunk,
   createNewBlockThunk,
   deleteSelectedBlocksThunk,
   documentStoreActions,
+  pasteNodeThunk,
 } from "@/store/slices/documentSlice";
 
 /** Обертка над document slice - только для set */
 export function useDocumentActions() {
   const dispatch = useDispatch();
 
-  function insertNode(opt: {
-    node: MOMAllContent;
-    parentId: string | null;
-    index?: number;
-    afterNodeId?: string;
-  }) {
+  function insertNode(opt: { node: MOMAllContent; parentId: string | null; index?: number; afterNodeId?: string }) {
     dispatch(documentStoreActions.insertNode(opt));
   }
 
@@ -38,18 +35,11 @@ export function useDocumentActions() {
     dispatch(documentStoreActions.removeNode({ nodeId }));
   }
 
-  function updateNode<T extends Partial<MOMAllContent>>(opt: {
-    nodeId: string;
-    patch: T;
-  }) {
+  function updateNode<T extends Partial<MOMAllContent>>(opt: { nodeId: string; patch: T }) {
     dispatch(documentStoreActions.updateNode(opt));
   }
 
-  function moveNode(opt: {
-    nodeId: string;
-    toParentId: string | null;
-    toIndex: number;
-  }) {
+  function moveNode(opt: { nodeId: string; toParentId: string | null; toIndex: number }) {
     dispatch(documentStoreActions.moveNode(opt));
   }
 
@@ -74,8 +64,12 @@ export function useDocumentActions() {
     dispatch(addLinkThunk(url, linkId));
   }
 
-  function copyNode(node: MOMAllContent | undefined) {
-    dispatch(documentStoreActions.copyNode(node));
+  function copyNode(nodeId?: string) {
+    dispatch(copyNodeThunk(nodeId));
+  }
+
+  function pasteNode() {
+    dispatch(pasteNodeThunk());
   }
 
   function clearDocument() {
@@ -106,9 +100,10 @@ export function useDocumentActions() {
     addLink,
     commitInlineEdit,
     copyNode,
+    pasteNode,
     clearDocument,
     createNewBlock,
     deleteSelectedBlocks,
-    updateRootOrder
+    updateRootOrder,
   };
 }
