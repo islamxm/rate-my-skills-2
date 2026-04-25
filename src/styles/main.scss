@@ -1,7 +1,6 @@
 // выносим в layer чтобы не мешал стилям @uiw, это лучше чем вручную править стили через :not()
 @layer gfm {
-  @import "./gfm-test.scss";
+  @import "./gfm.scss";
 }
 @import "./styles.scss";
-@import "./code-block.scss";
 @import "@uiw/react-textarea-code-editor/dist.css";

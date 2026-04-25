@@ -1,12 +1,8 @@
-.code-block {
-
-  .code-block-body {
-    // background-color: transparent !important;
-
-    .code-block-editor {
+.wrapper {
+  .body {
+    .editor {
       font-size: 16px;
       background-color: transparent !important;
-
       pre {
         background-color: transparent !important;
         padding: 0 !important;
@@ -15,8 +11,8 @@
   }
 }
 
-.code-block.code-block-preview-bg {
-  .code-block-body {
+.wrapper.preview {
+  .body {
     background-color: #f6f8fa;
   }
 }

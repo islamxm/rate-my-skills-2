@@ -21,6 +21,7 @@ import type { MOMCode } from "@/mom/types";
 import { MOM } from "@/mom";
 import { getBlockColors } from "../../lib/getBlockColors";
 import { useCode } from "../../lib/useCode";
+import classes from "./classes.module.scss";
 
 type Props = {
   nodeId: string;
@@ -53,9 +54,9 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
       data-id={nodeId}
       data-type={node.type}
       data-parent-id={node.parentId ?? ""}
-      className={clsx("block-node code-block p-[5px]", !blockHighlighting && "code-block-preview-bg")}
+      className={clsx("block-node p-[5px]", !blockHighlighting && classes.preview, classes.wrapper)}
     >
-      <div className="code-block-header flex gap-2 justify-between">
+      <div className="flex gap-2 justify-between">
         {isSelected ? (
           <Select value={language} onValueChange={onLangChange}>
             <SelectTrigger style={{ backgroundColor: border }} className="w-full max-w-48 shadow-none border-none rounded-sm">
@@ -88,7 +89,7 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
         )}
       </div>
 
-      <div className="code-block-body">
+      <div className={classes.body}>
         {language && (
           <CodeEditor
             value={code}
@@ -96,7 +97,7 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
             placeholder="..."
             onChange={onCodeChange}
             onBlur={onBlur}
-            className="code-block-editor"
+            className={classes.editor}
             ref={ref}
           />
         )}
