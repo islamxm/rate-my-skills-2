@@ -32,6 +32,7 @@ import {
   OctagonAlert,
   Braces,
   Puzzle,
+  TextAlignStart,
 } from "lucide-react";
 import { useSelectionActions } from "@/hooks/useSelectionActions";
 import { CompositionMenuButton } from "@/features/create-composition";
@@ -179,7 +180,7 @@ export const EditorToolbar = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant={"outline"} size={"icon"} onClick={addParagraph}>
-            P
+            <TextAlignStart/>
           </Button>
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create Paragraph</TooltipContent>

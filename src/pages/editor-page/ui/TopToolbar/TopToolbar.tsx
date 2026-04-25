@@ -14,7 +14,6 @@ export const TopToolbar = () => {
     <div className="flex p-2 gap-1 justify-between flex-1 bg-white">
       <div className="flex gap-1">
         <div className="flex gap-1">
-          <DocumentTitle />
           <CreateDocumentButton>
             <FilePlus />
             New Document
@@ -26,6 +25,7 @@ export const TopToolbar = () => {
             <Redo2 />
           </Button>
         </div>
+        <DocumentTitle />
         <Menu />
       </div>
       <div className="flex gap-1">
