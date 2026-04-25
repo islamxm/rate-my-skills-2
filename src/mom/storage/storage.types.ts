@@ -4,8 +4,9 @@ export type MOMDocumentEntity = {
   id: string;
   title: string;
   thumbnail: Blob | null;
-  lastModified: number; //timestamp in ms
+  lastModified: number; //ms
 
+  // на будущее
   isFavorite: boolean;
   isDisabled: boolean;
   isPinned: boolean;

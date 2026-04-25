@@ -21,6 +21,7 @@
     "cmdk": "^1.1.1",
     "dayjs": "^1.11.20",
     "dexie": "^4.4.2",
+    "dexie-react-hooks": "^4.4.0",
     "dompurify": "^3.3.3",
     "github-markdown-css": "^5.8.1",
     "html2canvas": "^1.4.1",

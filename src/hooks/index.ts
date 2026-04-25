@@ -10,3 +10,4 @@ export { useUI } from "./useUI";
 export { useSelectionActions } from "./useSelectionActions";
 export { useDocumentShortcuts } from "./useDocumentShortcuts";
 export { useEvent } from "./useEvent";
+export { useStorageQuery } from "./useStorageQuery";
