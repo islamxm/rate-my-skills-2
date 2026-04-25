@@ -1,4 +1,4 @@
-import { isParentNode } from "../validator/typeGuards";
+import { isParentNode } from "../guard/guard";
 import type { MOMAllContent, MOMDocument, MOMGroupMeta } from "../types";
 
 export function getNodeById(

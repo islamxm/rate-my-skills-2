@@ -2,7 +2,7 @@ import { produce } from "immer";
 import { nanoid } from "nanoid";
 import type { MOMAllContent, MOMDocument, MOMGroupMeta } from "../types";
 import type { BatchOp, EngineResult, GroupOp, InsertOp, MOMOperation, MoveOp, RemoveOp, RenameGroupOp, UngroupOp, UpdateOp } from "./engine.types";
-import { isParentNode } from "../validator/typeGuards";
+import { isParentNode } from "../guard/guard";
 import { getDescendants, getGroup, getNodeById, getSiblingNodes, isDescendantOf } from "../selector/selectors";
 import { canInsert } from "../validator/validator";
 
