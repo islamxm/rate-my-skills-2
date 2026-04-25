@@ -11,5 +11,3 @@ export type MOMDocumentEntity = {
   isDisabled: boolean;
   isPinned: boolean;
 } & MOMDocument;
-
-export type CreateDocumentPayload = Pick<MOMDocumentEntity, "title">;

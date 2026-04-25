@@ -37,7 +37,6 @@ export function canInsert(parentType: MOMNodeType, childType: MOMNodeType) {
   return ALLOWED_CHILDREN[parentType].includes(childType);
 }
 
-/**  */
 export function validateNode(
   doc: MOMDocument,
   nodeId: string,

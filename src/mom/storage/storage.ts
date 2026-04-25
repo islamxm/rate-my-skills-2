@@ -1,5 +1,5 @@
 import { db } from "./storage.model";
-import type { CreateDocumentPayload, MOMDocumentEntity } from "./storage.types";
+import type { MOMDocumentEntity } from "./storage.types";
 
 export const getDocument = async (id: string): Promise<MOMDocumentEntity | undefined> => {
   return await db.documents.get(id);

@@ -49,9 +49,9 @@ export type MoveOp = {
 
 export type GroupOp = {
   type: "group";
-  nodeIds: string[]; // строго смежные ноды
-  fromIndex: number; // начало диапазона в rootOrder
-  toIndex: number; // конец диапазона в rootOrder
+  nodeIds: string[]; 
+  fromIndex: number; 
+  toIndex: number; 
   group: MOMGroupMeta;
 };
 
@@ -59,8 +59,8 @@ export type UngroupOp = {
   type: "ungroup";
   groupId: string;
   prevGroup: MOMGroupMeta;
-  nodeIds: string[]; // добавляем — нужен для invertOp
-  fromIndex: number; // добавляем — нужен для invertOp
+  nodeIds: string[]; 
+  fromIndex: number; 
   toIndex: number;
 };
 
@@ -144,12 +144,6 @@ export declare function applyOp(opt: {
   op: MOMOperation;
 }): MOMDocument;
 
-// Возвращает операцию обратную данной.
-// InsertOp  → RemoveOp (и обратно)
-// UpdateOp  → UpdateOp с prev и next полями поменянными местами
-// MoveOp    → MoveOp с from и to поменянными местами
-// GroupOp   → UngroupOp (и обратно)
-// BatchOp   → BatchOp с ops в обратном порядке, каждая инвертирована
 export declare function invertOp(op: MOMOperation): MOMOperation;
 
 export declare function groupNodes(opt: {
@@ -174,12 +168,6 @@ export declare function applyOp(opt: {
   op: MOMOperation;
 }): MOMDocument;
 
-// Возвращает операцию обратную данной.
-// InsertOp  → RemoveOp (и обратно)
-// UpdateOp  → UpdateOp с prev и next полями поменянными местами
-// MoveOp    → MoveOp с from и to поменянными местами
-// GroupOp   → UngroupOp (и обратно)
-// BatchOp   → BatchOp с ops в обратном порядке, каждая инвертирована
 export declare function invertOp(op: MOMOperation): MOMOperation;
 
 export type MOMCreateParams = {

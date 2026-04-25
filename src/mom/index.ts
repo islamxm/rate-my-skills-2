@@ -1,7 +1,7 @@
 import { Engine } from "./engine/engine";
 import { Selector } from "./selector/selectors";
 import { Validator } from "./validator/validator";
-import { Guard } from "./validator/typeGuards";
+import { Guard } from "./guard/guard";
 import { Serializer } from "./serializer/serializer";
 import { Parser } from "./parser/parser";
 import { Editor } from "./editor/editor";

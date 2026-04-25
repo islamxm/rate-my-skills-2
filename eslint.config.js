@@ -23,7 +23,7 @@ export default defineConfig([
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/ban-ts-comment": "off",
-      "@eslint/no-self-assign": "off"
+      "no-self-assign": "off"
     }
   },
 ])

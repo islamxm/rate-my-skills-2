@@ -7,12 +7,14 @@ export function useDocument() {
   const nodes = useSelector((s) => s.document.doc.nodes);
   const doc = useSelector((s) => s.document.doc);
   const id = useSelector((s) => s.document.id);
+  const title = useSelector((s) => s.document.title);
 
   return {
     rootOrder,
     groups,
     nodes,
     doc,
-    id
+    id,
+    title,
   };
 }

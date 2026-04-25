@@ -1,8 +1,7 @@
 import { momToMarkdown } from "../serializer/serializer";
 import type { MOMMap } from "../types";
 
-export function exportMarkdown(rootOrder: Array<string>, nodes: MOMMap) {
-  const timeStamp = new Date().toISOString();
+export function exportMarkdown(rootOrder: Array<string>, nodes: MOMMap, title: string) {
   const resultMarkdownString = momToMarkdown(rootOrder, nodes);
   if (!resultMarkdownString) return;
   const blob = new Blob([resultMarkdownString], {
@@ -11,7 +10,7 @@ export function exportMarkdown(rootOrder: Array<string>, nodes: MOMMap) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = `readgen-${timeStamp}.md`;
+  link.download = `${title}.md`;
   document.body.appendChild(link);
   link.click();
 

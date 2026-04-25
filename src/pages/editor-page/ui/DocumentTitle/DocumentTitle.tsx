@@ -8,7 +8,7 @@ export const DocumentTitle = () => {
 
   return (
     <Button variant={"outline"} className="basis-[250px] shrink truncate justify-start gap-0">
-      <span className="truncate">{title}</span>.md
+      <span className="truncate">{title}</span>
     </Button>
   );
 };

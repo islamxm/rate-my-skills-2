@@ -35,8 +35,7 @@ export const MOM_TYPE = {
   ] as Array<MOMBlockNodeType>,
   inline: [
     "listItem",
-    "paragraph",
-    "inlineCode",
+    // "inlineCode", вернемся позже
     "text",
   ] as Array<MOMInlineNodeType>,
 };

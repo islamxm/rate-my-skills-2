@@ -88,8 +88,8 @@ export function useDocumentActions() {
     dispatch(documentStoreActions.updateRootOrder(order));
   }
 
-  function initiateDocument(doc: MOMDocument, id: string) {
-    dispatch(documentStoreActions.initiateDocument({ doc, id }));
+  function initiateDocument(doc: MOMDocument, id: string, title: string) {
+    dispatch(documentStoreActions.initiateDocument({ doc, id, title }));
   }
 
   function uninitiateDocument() {
@@ -114,6 +114,6 @@ export function useDocumentActions() {
     deleteSelectedBlocks,
     updateRootOrder,
     initiateDocument,
-    uninitiateDocument
+    uninitiateDocument,
   };
 }

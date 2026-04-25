@@ -6,7 +6,7 @@ import { DocumentThumbnailObserver } from "../DocumentThumbnailObserver/Document
 import { EmptyDocumentBootstrap } from "../EmptyDocumentBootstrap/EmptyDocumentBootstrap";
 
 export const Canvas = () => {
-  const { rootOrder } = useDocument();
+  const { rootOrder, id } = useDocument();
   const ref = useRef<HTMLDivElement>(null);
   const { addLink } = useDocumentActions();
   useDocumentShortcuts();
@@ -16,7 +16,7 @@ export const Canvas = () => {
     <>
       <LinkTooltip addUrl={addLink} containerRef={ref as any} />
       <div ref={ref} className="rounded-lg border h-full flex-1 p-2 pt-[20px] bg-white overflow-auto min-h-0">
-        {rootOrder.length === 0 && <EmptyDocumentBootstrap />}
+        {(rootOrder.length === 0 && id) && <EmptyDocumentBootstrap />}
         <div ref={containerRef} className="markdown-body pb-[50vh]">
           <DocumentThumbnailObserver containerRef={containerRef} />
           {rootOrder.map((nodeId) => (

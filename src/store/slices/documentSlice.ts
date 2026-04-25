@@ -13,6 +13,7 @@ type UndoStack = {
 
 type InitialState = {
   id: string | null;
+  title: string;
   doc: MOMDocument;
   history: UndoStack;
   copiedNode: {
@@ -30,6 +31,7 @@ pNode.children = [textNode1.id, textNode2.id, textNode3.id];
 
 const initialState: InitialState = {
   id: null,
+  title: "",
   doc: {
     rootOrder: [],
     nodes: {},
@@ -195,7 +197,6 @@ export const documentSlice = createSlice({
 
       state.history.past.push(op);
     },
-
     commitInlineEdit: (
       state,
       action: PayloadAction<{
@@ -236,17 +237,14 @@ export const documentSlice = createSlice({
       const batchOp: BatchOp = { type: "batch", ops };
       commitResult(state, { doc: currentDoc, op: batchOp });
     },
-
     copyNode: (state, action: PayloadAction<InitialState["copiedNode"]>) => {
       state.copiedNode = action.payload;
     },
-
     copyPasted: (state) => {
       if (state.copiedNode) {
         state.copiedNode.isPasted = true;
       }
     },
-
     updateRootOrder: (state, action: PayloadAction<Array<string>>) => {
       state.doc.rootOrder = action.payload;
     },
@@ -259,18 +257,20 @@ export const documentSlice = createSlice({
       state.copiedNode = null;
     },
 
-    initiateDocument: (state, action: PayloadAction<{ doc: MOMDocument; id: string }>) => {
+    initiateDocument: (state, action: PayloadAction<{ doc: MOMDocument; id: string; title: string }>) => {
       state.doc = action.payload.doc;
       state.id = action.payload.id;
       state.history.future = [];
       state.history.past = [];
       state.copiedNode = null;
+      state.title = action.payload.title;
     },
     uninitiateDocument: (state) => {
       state.doc.nodes = {};
       state.doc.groups = {};
       state.doc.rootOrder = [];
       state.id = null;
+      state.title = "";
       state.history.future = [];
       state.history.past = [];
       state.copiedNode = null;

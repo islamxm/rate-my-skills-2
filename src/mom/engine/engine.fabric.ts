@@ -1,7 +1,6 @@
 import { nanoid } from "nanoid";
 import type {
   MOMAlert,
-  MOMBlockNodeType,
   MOMBlockquote,
   MOMCode,
   MOMHeading,
