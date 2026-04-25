@@ -1,12 +1,11 @@
 import { FilePlus, Redo2, Undo2 } from "lucide-react";
 import { Button } from "@shared/ui";
-import { useHistory, useStorageQuery } from "@/hooks";
+import { useHistory } from "@/hooks";
 
 import { ExportMarkdownButton } from "@/features/export-markdown";
 import { Menu } from "../Menu/Menu";
 import { CreateDocumentButton } from "@/features/create-document";
 import { DocumentTitle } from "../DocumentTitle/DocumentTitle";
-import { MOM } from "@/mom";
 
 export const TopToolbar = () => {
   const { undo, redo } = useHistory();

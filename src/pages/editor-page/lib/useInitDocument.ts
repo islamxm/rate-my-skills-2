@@ -2,7 +2,7 @@ import { useDocumentActions } from "@/hooks";
 import { MOM } from "@/mom";
 import type { CommonStatus } from "@/shared/model";
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 
 export function useInitDocument() {
   const { initiateDocument } = useDocumentActions();
@@ -32,5 +32,5 @@ export function useInitDocument() {
       });
   }, [id, initiateDocument]);
 
-  return {isSuccess, isLoading};
+  return {isSuccess, isLoading, isError};
 }

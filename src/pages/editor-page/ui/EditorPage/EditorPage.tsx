@@ -6,10 +6,10 @@ import { TopToolbar } from "../TopToolbar/TopToolbar";
 import { AppLayout } from "@/widgets/app-layout";
 
 export const EditorPage = () => {
-  const {isLoading} = useInitDocument();
+  const {isLoading, isError} = useInitDocument();
 
   return (
-    <AppLayout header={<TopToolbar />} sidebar={<EditorToolbar />}>
+    <AppLayout disabled={isLoading || isError}  header={<TopToolbar />} sidebar={<EditorToolbar />}>
       <div className={"gap-[15px] flex-1 flex min-h-0"}>
         <Canvas />
         <CanvasMap />
