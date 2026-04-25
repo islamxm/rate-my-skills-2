@@ -3,6 +3,7 @@ import { shortcut } from "@shared/lib";
 import type { MOMAllContent, MOMTextMarks } from "@/mom/types";
 import { useChildren, useCursor, useDocumentActions, useNodeSelection, useSelectionActions } from "@/hooks";
 import { MOM } from "@/mom";
+import { useDebounceCallback } from "usehooks-ts";
 
 /**
  * text - если разрешен только сырой текст (ex: h1,h2,...)
@@ -68,6 +69,8 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
     }
   };
 
+  const lazySave = useDebounceCallback(save, 800);
+
   /** при отключении фокуса предварительно сохраняем результат*/
   const onBlur = () => {
     save();
@@ -119,6 +122,7 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
     if (target.textContent === "") {
       target.innerHTML = "";
     }
+    lazySave();
   };
 
   /** сброс браузерных стилей перед вводом */

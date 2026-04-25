@@ -4,6 +4,7 @@ import type { TextareaAutosizeProps } from "react-textarea-autosize";
 import type { Tabs } from "radix-ui";
 import { MOM } from "@/mom";
 import { useDocumentActions, useNodeSelection } from "@/hooks";
+import { useDebounceCallback } from "usehooks-ts";
 
 type ViewType = "preview" | "raw";
 
@@ -16,6 +17,7 @@ export function useRaw(node: MOMRaw) {
 
   const onValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
+    lazySave();
   };
 
   const save = () => {
@@ -31,6 +33,8 @@ export function useRaw(node: MOMRaw) {
       },
     });
   };
+
+  const lazySave = useDebounceCallback(save, 800);
 
   const blur = () => {
     if (!ref.current) return;

@@ -3,6 +3,7 @@ import { shortcut } from "@shared/lib";
 import type { MOMAllContent, MOMTextMarks } from "@/mom/types";
 import { useCursor, useDocumentActions, useNodeSelection, useSelectionActions } from "@/hooks";
 import { MOM } from "@/mom";
+import { useDebounceCallback } from "usehooks-ts";
 
 // рассмотреть в будущем фиксирования focusedId конкретного li в сторе для предсказуемого управления кареткой
 
@@ -49,6 +50,8 @@ export function useListEditor(
     if (canSkipUpdate) return;
     commitInlineEdit({ nodeId, nodes });
   };
+
+  const lazySave = useDebounceCallback(save, 800);
 
   /** при отключении фокуса предварительно сохраняем результат*/
   const onBlur = () => {
@@ -99,6 +102,7 @@ export function useListEditor(
     if (target.textContent === "") {
       target.innerHTML = "";
     }
+    lazySave();
   };
 
   /** сброс браузерных стилей перед вводом */

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ChangeEvent, type FC } from "react";
+import { type FC } from "react";
 import CodeEditor from "@uiw/react-textarea-code-editor";
 import {
   Button,
@@ -14,56 +14,17 @@ import {
   TooltipTrigger,
 } from "@shared/ui";
 import { Copy } from "lucide-react";
-import { toast } from "sonner";
-import { useDocumentActions } from "@/hooks/useDocumentActions";
 import { useNodeSelection } from "@/hooks/useNodeSelection";
 import clsx from "clsx";
 import { useNode, useUI } from "@/hooks";
 import type { MOMCode } from "@/mom/types";
 import { MOM } from "@/mom";
 import { getBlockColors } from "../../lib/getBlockColors";
+import { useCode } from "../../lib/useCode";
 
 type Props = {
   nodeId: string;
 };
-
-const LANGUAGE_OPTIONS = [
-  {
-    value: "javascript",
-    label: "JavaScript",
-  },
-  {
-    value: "typescript",
-    label: "TypeScript",
-  },
-  { value: "jsx", label: "JSX" },
-  { value: "tsx", label: "TSX" },
-  { value: "html", label: "HTML" },
-  { value: "markdown", label: "Markdown" },
-  { value: "css", label: "CSS" },
-  { value: "scss", label: "SCSS" },
-  { value: "sass", label: "Sass" },
-  { value: "less", label: "Less" },
-  { value: "json", label: "json" },
-  { value: "python", label: "Python" },
-  { value: "java", label: "Java" },
-  { value: "csharp", label: "C#" },
-  { value: "cpp", label: "C++" },
-  { value: "c", label: "C" },
-  { value: "go", label: "Golang" },
-  { value: "rust", label: "Rust" },
-  { value: "php", label: "PHP" },
-  { value: "ruby", label: "Ruby" },
-  { value: "swift", label: "Swift" },
-  { value: "kotlin", label: "Kotlin" },
-  { value: "yaml", label: "YAML" },
-  { value: "toml", label: "TOML" },
-  { value: "docker", label: "Docker" },
-  { value: "sql", label: "SQL" },
-  { value: "bash", label: "bash" },
-  { value: "nginx", label: "nginx" },
-  { value: "makefile", label: "Makefile" },
-];
 
 /**
  * этот блок нужно сделать динамическим, то есть будут два состояния:
@@ -77,72 +38,15 @@ const LANGUAGE_OPTIONS = [
 
 export const CodeNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
-  const { updateNode } = useDocumentActions();
-  const { isSelected, isFocused } = useNodeSelection(nodeId);
-  const {blockHighlighting} = useUI();
-
-  const [code, setCode] = useState<string>((node as MOMCode)?.value || "");
-  const [language, setLanguage] = useState<string>(
-    (node as any).lang || "javascript",
-  );
-  const ref = useRef<HTMLTextAreaElement>(null);
+  const { isSelected } = useNodeSelection(nodeId);
+  const { blockHighlighting } = useUI();
+  const { ref, language, onLangChange, languageLabel, code, copyToClipboard, LANGUAGE_OPTIONS, onCodeChange, onBlur } = useCode(node as MOMCode);
 
   const isValidNode = MOM.Guard.isCodeNode(node);
-
-  useEffect(() => {
-    if (isFocused) {
-      ref.current?.focus();
-    }
-  }, [isFocused]);
 
   if (!isValidNode) return null;
 
   const { border } = getBlockColors(node.type);
-
-  const languageLabel = LANGUAGE_OPTIONS.find(
-    (f) => f.value === language,
-  )?.label;
-
-  const onCodeChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    setCode(e.target.value);
-  };
-
-  const onLangChange = (e: string) => {
-    const newLang = e;
-    setLanguage(newLang);
-    updateNode<MOMCode>({
-      nodeId,
-      patch: {
-        id: nodeId,
-        parentId: node.parentId,
-        value: code,
-        lang: newLang,
-        type: "code",
-      },
-    });
-  };
-
-  const onBlur = () => {
-    updateNode<MOMCode>({
-      nodeId,
-      patch: {
-        id: nodeId,
-        value: code,
-        type: "code",
-        parentId: node.parentId,
-        lang: language,
-      },
-    });
-  };
-
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      toast.success("Copied");
-    } catch {
-      toast.error("Copy failed");
-    }
-  };
 
   return (
     <div
@@ -154,10 +58,7 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
       <div className="code-block-header flex gap-2 justify-between">
         {isSelected ? (
           <Select value={language} onValueChange={onLangChange}>
-            <SelectTrigger
-              style={{ backgroundColor: border }}
-              className="w-full max-w-48 shadow-none border-none rounded-sm"
-            >
+            <SelectTrigger style={{ backgroundColor: border }} className="w-full max-w-48 shadow-none border-none rounded-sm">
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
             <SelectContent>
@@ -172,20 +73,13 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
             </SelectContent>
           </Select>
         ) : (
-          <div className="text-[0.875rem] px-[12px] py-[8px]">
-            {language ? languageLabel : "Select a language"}
-          </div>
+          <div className="text-[0.875rem] px-[12px] py-[8px]">{language ? languageLabel : "Select a language"}</div>
         )}
 
         {code && (
           <Tooltip>
             <TooltipTrigger>
-              <Button
-                onClick={copyToClipboard}
-                variant={"outline"}
-                className="bg-transparent"
-                size={"icon"}
-              >
+              <Button onClick={copyToClipboard} variant={"outline"} className="bg-transparent" size={"icon"}>
                 <Copy />
               </Button>
             </TooltipTrigger>
