@@ -328,7 +328,7 @@ export function saveCursor(element: HTMLElement): CursorPosition | null {
   return { offset };
 }
 
-/** для восстановления позиции каретки */
+/** для восстановления позиции каретки */ //нужно восстановить вместе с выделением
 export function restoreCursor(element: HTMLElement, position: CursorPosition | null): void {
   if (!position) return;
 
@@ -401,10 +401,7 @@ export function getCssClassByNode(node: MOMAllContent) {
 
 /** функция для проверки возможности пропуска обнолвения стейта, проверяется состояние DOM в строковом виде с состоянием MOM в строковом виде */
 export function shoulSkipUpdateState(prev: string, current: string) {
-  if (prev === current) {
-    return true;
-  }
-  return false;
+  return prev === current;
 }
 
 export function pastePlainText(text: string) {
