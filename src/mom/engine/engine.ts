@@ -101,7 +101,7 @@ export function removeNode(opt: { doc: MOMDocument; nodeId: string }): EngineRes
   const siblings = parentId === null ? doc.rootOrder : ((doc.nodes[parentId] as any).children as string[]);
   const index = siblings.indexOf(nodeId);
   const descendantIds = getDescendants(doc.nodes, nodeId).map((n) => n.id);
-
+  const descendants = Object.fromEntries(getDescendants(doc.nodes, nodeId).map((n) => [n.id, n]));
   const newDoc = produce(doc, (draft) => {
     if (parentId === null) {
       draft.rootOrder.splice(index, 1);
@@ -121,6 +121,7 @@ export function removeNode(opt: { doc: MOMDocument; nodeId: string }): EngineRes
     parentId,
     node,
     nodeId,
+    descendants,
   };
 
   return { op, doc: newDoc };
@@ -363,13 +364,20 @@ export function applyOp(opt: { doc: MOMDocument; op: MOMOperation }): MOMDocumen
   const { doc, op } = opt;
 
   switch (op.type) {
-    case "insert":
-      return insertNode({
+    case "insert": {
+      const newDoc = insertNode({
         doc,
         node: op.node,
         parentId: op.parentId,
         index: op.index,
       }).doc;
+      if (op.descendants && Object.keys(op.descendants).length > 0) {
+        return produce(newDoc, (draft) => {
+          Object.assign(draft.nodes, op.descendants);
+        });
+      }
+      return newDoc;
+    }
 
     case "remove":
       return removeNode({
@@ -430,6 +438,7 @@ export function invertOp(op: MOMOperation): MOMOperation {
         parentId: op.parentId,
         index: op.index,
         node: op.node,
+        descendants: op.descendants,
       } satisfies RemoveOp;
 
     case "remove":
@@ -438,6 +447,7 @@ export function invertOp(op: MOMOperation): MOMOperation {
         node: op.node,
         parentId: op.parentId,
         index: op.index,
+        descendants: op.descendants,
       } satisfies InsertOp;
 
     case "update":

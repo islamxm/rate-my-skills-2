@@ -21,6 +21,7 @@ export type InsertOp = {
   node: MOMNode<MOMAllContent>;
   parentId: string | null;
   index: number;
+  descendants: Record<string, MOMNode<MOMAllContent>>;
 };
 
 export type RemoveOp = {
@@ -29,6 +30,7 @@ export type RemoveOp = {
   node: MOMNode<MOMAllContent>;
   parentId: string | null;
   index: number;
+  descendants: Record<string, MOMNode<MOMAllContent>>;
 };
 
 export type UpdateOp = {
@@ -49,9 +51,9 @@ export type MoveOp = {
 
 export type GroupOp = {
   type: "group";
-  nodeIds: string[]; 
-  fromIndex: number; 
-  toIndex: number; 
+  nodeIds: string[];
+  fromIndex: number;
+  toIndex: number;
   group: MOMGroupMeta;
 };
 
@@ -59,8 +61,8 @@ export type UngroupOp = {
   type: "ungroup";
   groupId: string;
   prevGroup: MOMGroupMeta;
-  nodeIds: string[]; 
-  fromIndex: number; 
+  nodeIds: string[];
+  fromIndex: number;
   toIndex: number;
 };
 
@@ -76,97 +78,40 @@ export type BatchOp = {
   ops: MOMOperation[];
 };
 
-export type MOMOperation =
-  | InsertOp
-  | RemoveOp
-  | UpdateOp
-  | MoveOp
-  | GroupOp
-  | UngroupOp
-  | RenameGroupOp
-  | BatchOp;
+export type MOMOperation = InsertOp | RemoveOp | UpdateOp | MoveOp | GroupOp | UngroupOp | RenameGroupOp | BatchOp;
 
 export type EngineResult = {
   doc: MOMDocument;
   op: MOMOperation;
 };
 
-export declare function insertNode(opt: {
-  doc: MOMDocument;
-  node: MOMAllContent;
-  parentId: string | null;
-  index: number;
-}): EngineResult;
+export declare function insertNode(opt: { doc: MOMDocument; node: MOMAllContent; parentId: string | null; index: number }): EngineResult;
 
-export declare function removeNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-}): EngineResult;
+export declare function removeNode(opt: { doc: MOMDocument; nodeId: string }): EngineResult;
 
-export declare function updateNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-  patch: Partial<MOMAllContent>;
-}): EngineResult;
+export declare function updateNode(opt: { doc: MOMDocument; nodeId: string; patch: Partial<MOMAllContent> }): EngineResult;
 
-export declare function moveNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-  toParentId: string | null;
-  toIndex: number;
-}): EngineResult;
+export declare function moveNode(opt: { doc: MOMDocument; nodeId: string; toParentId: string | null; toIndex: number }): EngineResult;
 
-export declare function convertNode(opt: {
-  doc: MOMDocument;
-  nodeId: string;
-  toType: MOMAllContent["type"];
-}): EngineResult;
+export declare function convertNode(opt: { doc: MOMDocument; nodeId: string; toType: MOMAllContent["type"] }): EngineResult;
 
-export declare function groupNodes(opt: {
-  doc: MOMDocument;
-  nodeIds: string[];
-  label: string;
-}): EngineResult;
+export declare function groupNodes(opt: { doc: MOMDocument; nodeIds: string[]; label: string }): EngineResult;
 
-export declare function ungroupNodes(opt: {
-  doc: MOMDocument;
-  groupId: string;
-}): EngineResult;
+export declare function ungroupNodes(opt: { doc: MOMDocument; groupId: string }): EngineResult;
 
-export declare function renameGroup(opt: {
-  doc: MOMDocument;
-  groupId: string;
-  label: string;
-}): EngineResult;
+export declare function renameGroup(opt: { doc: MOMDocument; groupId: string; label: string }): EngineResult;
 
-export declare function applyOp(opt: {
-  doc: MOMDocument;
-  op: MOMOperation;
-}): MOMDocument;
+export declare function applyOp(opt: { doc: MOMDocument; op: MOMOperation }): MOMDocument;
 
 export declare function invertOp(op: MOMOperation): MOMOperation;
 
-export declare function groupNodes(opt: {
-  doc: MOMDocument;
-  nodeIds: string[];
-  label: string;
-}): EngineResult;
+export declare function groupNodes(opt: { doc: MOMDocument; nodeIds: string[]; label: string }): EngineResult;
 
-export declare function ungroupNodes(opt: {
-  doc: MOMDocument;
-  groupId: string;
-}): EngineResult;
+export declare function ungroupNodes(opt: { doc: MOMDocument; groupId: string }): EngineResult;
 
-export declare function renameGroup(opt: {
-  doc: MOMDocument;
-  groupId: string;
-  label: string;
-}): EngineResult;
+export declare function renameGroup(opt: { doc: MOMDocument; groupId: string; label: string }): EngineResult;
 
-export declare function applyOp(opt: {
-  doc: MOMDocument;
-  op: MOMOperation;
-}): MOMDocument;
+export declare function applyOp(opt: { doc: MOMDocument; op: MOMOperation }): MOMDocument;
 
 export declare function invertOp(op: MOMOperation): MOMOperation;
 
@@ -182,7 +127,7 @@ export type MOMCreateParams = {
   list: { ordered?: boolean; parentId?: string | null };
   listItem: { parentId: string };
   blockquote: { parentId?: string | null };
-  alert: {parentId: string | null},
+  alert: { parentId: string | null };
   thematicBreak: { parentId?: string | null };
   text: { value?: string; parentId?: string | null };
   inlineCode: { value?: string; parentId?: string | null };
@@ -196,7 +141,7 @@ export type MOMCreateResult = {
   list: MOMList;
   listItem: MOMListItem;
   blockquote: MOMBlockquote;
-  alert: MOMAlert,
+  alert: MOMAlert;
   thematicBreak: MOMThematicBreak;
   text: MOMText;
   inlineCode: MOMInlineCode;

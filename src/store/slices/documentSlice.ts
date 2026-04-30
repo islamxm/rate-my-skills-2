@@ -183,7 +183,6 @@ export const documentSlice = createSlice({
     undo: (state) => {
       const op = state.history.past.pop();
       if (!op) return;
-
       const invertedOp = MOM.Engine.invertOp(op);
       state.doc = MOM.Engine.applyOp({ doc: state.doc, op: invertedOp });
 
