@@ -3,7 +3,7 @@ import { shortcut } from "@shared/lib";
 import type { MOMAllContent, MOMTextMarks } from "@/mom/types";
 import { useCursor, useDocumentActions, useNodeSelection, useSelectionActions } from "@/hooks";
 import { MOM } from "@/mom";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback } from "@shared/lib";
 
 // рассмотреть в будущем фиксирования focusedId конкретного li в сторе для предсказуемого управления кареткой
 /**
@@ -33,9 +33,13 @@ export function useListEditor(
   // const { isSelected: isListSelected } = useNodeSelection(listNodeId);
   const ref = useRef<HTMLLIElement>(null);
   const { saveCursor, restoreCursor } = useCursor<HTMLLIElement>(ref);
+  const isBlured = useRef<boolean>(false);
 
   const save = () => {
-    if (!ref.current) return;
+    if (!ref.current || isBlured.current) {
+      isBlured.current = false;
+      return;
+    }
     const nodes = MOM.Parser.domToMom(ref.current);
     const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(MOM.Serializer.momToHTML(children, nodeId), MOM.Serializer.momToHTML(nodes, nodeId));
     if (canSkipUpdate) return;
@@ -60,9 +64,11 @@ export function useListEditor(
     if (ref.current) {
       ref.current.blur();
     }
+    isBlured.current = true;
   };
 
   const onFocus = () => {
+    isBlured.current = false;
     setTimeout(() => {
       saveCursor();
       focuseNode(nodeId);

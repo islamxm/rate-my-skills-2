@@ -3,7 +3,7 @@ import { shortcut } from "@shared/lib";
 import type { MOMAllContent, MOMTextMarks } from "@/mom/types";
 import { useChildren, useCursor, useDocumentActions, useNodeSelection, useSelectionActions } from "@/hooks";
 import { MOM } from "@/mom";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback } from "@shared/lib";
 
 /**
  * text - если разрешен только сырой текст (ex: h1,h2,...)
@@ -25,9 +25,13 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
   const { commitInlineEdit, updateNode } = useDocumentActions();
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
+  const isBlured = useRef<boolean>(false);
 
   const save = () => {
-    if (!ref.current) return;
+    if (!ref.current || isBlured.current) {
+      isBlured.current = false;
+      return;
+    }
     if (parseType === "plain" && "value" in node) {
       const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(ref.current.textContent, node.value);
       if (canSkipUpdate) return;
@@ -61,6 +65,7 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
   const onBlur = () => {
     save();
     blur();
+    isBlured.current = true;
   };
 
   const onSelectBlock = () => {
@@ -99,6 +104,7 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
   };
 
   const onFocus = () => {
+    isBlured.current = false;
     setTimeout(() => {
       saveCursor();
       focuseNode(node.id);
@@ -162,6 +168,5 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
     ref,
     editorProps,
     applyFormat,
-    save,
   };
 }

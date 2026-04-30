@@ -8,7 +8,7 @@ type Props = { nodeId: string };
 
 export const ParagraphNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
-  const { ref, editorProps, applyFormat, save } =
+  const { ref, editorProps, applyFormat } =
     useEditor<HTMLParagraphElement>(node);
   const isValidNode = MOM.Guard.isParagraphNode(node);
 
@@ -17,7 +17,6 @@ export const ParagraphNode: FC<Props> = ({ nodeId }) => {
   return (
     <>
       <FormatToolbar
-        save={save}
         containerRef={ref as any}
         applyFormat={applyFormat}
       />

@@ -14,14 +14,12 @@ import { AnimatePresence, motion } from "motion/react";
 type Props = {
   containerRef: RefObject<HTMLElement>;
   applyFormat: (format: keyof MOMTextMarks) => void;
-  save?: any;
 };
 
 /** сейчас этот контейнер для каждого блока свой, надо вынести на уровень Canvas */
 export const FormatToolbar: FC<Props> = ({
   containerRef,
   applyFormat,
-  // save,
 }) => {
   const [visible, setVisible] = useState(false);
   const { refs, floatingStyles, update } = useFloating({

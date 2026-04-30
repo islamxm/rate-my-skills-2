@@ -1,8 +1,9 @@
 import { useDocumentActions, useNodeSelection } from "@/hooks";
 import type { MOMCode } from "@/mom/types";
+import type { TextareaCodeEditorProps } from "@uiw/react-textarea-code-editor";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback } from "@shared/lib";
 
 const LANGUAGE_OPTIONS = [
   {
@@ -45,17 +46,13 @@ const LANGUAGE_OPTIONS = [
 export function useCode(node: MOMCode) {
   const { updateNode } = useDocumentActions();
   const { isFocused } = useNodeSelection(node.id);
-  const [code, setCode] = useState<string>((node as MOMCode)?.value || "");
   const [language, setLanguage] = useState<string>((node as any).lang || "javascript");
   const ref = useRef<HTMLTextAreaElement>(null);
   const languageLabel = LANGUAGE_OPTIONS.find((f) => f.value === language)?.label;
-
-  const onCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setCode(e.target.value);
-    lazySave();
-  };
+  const value = (node as MOMCode)?.value || "";
 
   const onLangChange = (e: string) => {
+    if (!ref.current) return;
     const newLang = e;
     setLanguage(newLang);
     updateNode<MOMCode>({
@@ -63,7 +60,7 @@ export function useCode(node: MOMCode) {
       patch: {
         id: node.id,
         parentId: node.parentId,
-        value: code,
+        value: ref.current.value,
         lang: newLang,
         type: "code",
       },
@@ -71,11 +68,12 @@ export function useCode(node: MOMCode) {
   };
 
   const save = () => {
+    if (!ref.current) return;
     updateNode<MOMCode>({
       nodeId: node.id,
       patch: {
         id: node.id,
-        value: code,
+        value: ref.current.value,
         type: "code",
         parentId: node.parentId,
         lang: language,
@@ -90,8 +88,9 @@ export function useCode(node: MOMCode) {
   };
 
   const copyToClipboard = async () => {
+    if (!ref.current) return;
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(ref.current.value);
       toast.success("Copied");
     } catch {
       toast.error("Copy failed");
@@ -104,15 +103,23 @@ export function useCode(node: MOMCode) {
     }
   }, [isFocused]);
 
+
+  const fieldProps: TextareaCodeEditorProps = {
+    placeholder: "...",
+    value,
+    onInput: lazySave,
+    onBlur,
+    language,
+    tabIndex: -1,
+    spellCheck: false,
+  };
+
   return {
     ref,
-    language,
     onLangChange,
     languageLabel,
-    code,
     copyToClipboard,
     LANGUAGE_OPTIONS,
-    onCodeChange,
-    onBlur,
+    fieldProps,
   };
 }

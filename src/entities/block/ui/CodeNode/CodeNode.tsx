@@ -41,7 +41,7 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
   const node = useNode(nodeId);
   const { isSelected } = useNodeSelection(nodeId);
   const { blockHighlighting } = useUI();
-  const { ref, language, onLangChange, languageLabel, code, copyToClipboard, LANGUAGE_OPTIONS, onCodeChange, onBlur } = useCode(node as MOMCode);
+  const { ref, onLangChange, languageLabel, copyToClipboard, LANGUAGE_OPTIONS, fieldProps } = useCode(node as MOMCode);
 
   const isValidNode = MOM.Guard.isCodeNode(node);
 
@@ -58,7 +58,7 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
     >
       <div className="flex gap-2 justify-between">
         {isSelected ? (
-          <Select value={language} onValueChange={onLangChange}>
+          <Select value={fieldProps.language} onValueChange={onLangChange}>
             <SelectTrigger style={{ backgroundColor: border }} className="w-full max-w-48 shadow-none border-none rounded-sm">
               <SelectValue placeholder="Select a language" />
             </SelectTrigger>
@@ -74,12 +74,12 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
             </SelectContent>
           </Select>
         ) : (
-          <div className="text-[0.875rem] px-[12px] py-[8px]">{language ? languageLabel : "Select a language"}</div>
+          <div className="text-[0.875rem] px-[12px] py-[8px]">{fieldProps.language ? languageLabel : "Select a language"}</div>
         )}
 
-        {code && (
+        {node.value && (
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger asChild>
               <Button onClick={copyToClipboard} variant={"outline"} className="bg-transparent" size={"icon"}>
                 <Copy />
               </Button>
@@ -89,19 +89,7 @@ export const CodeNode: FC<Props> = ({ nodeId }) => {
         )}
       </div>
 
-      <div className={classes.body}>
-        {language && (
-          <CodeEditor
-            value={code}
-            language={language}
-            placeholder="..."
-            onChange={onCodeChange}
-            onBlur={onBlur}
-            className={classes.editor}
-            ref={ref}
-          />
-        )}
-      </div>
+      <div className={classes.body}>{fieldProps.language && <CodeEditor {...fieldProps} className={classes.editor} ref={ref} />}</div>
     </div>
   );
 };

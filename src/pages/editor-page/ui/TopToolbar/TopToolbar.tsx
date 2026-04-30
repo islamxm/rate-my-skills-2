@@ -14,21 +14,22 @@ export const TopToolbar = () => {
     <div className="flex p-2 gap-1 justify-between flex-1 bg-white">
       <div className="flex gap-1">
         <div className="flex gap-1">
-          <CreateDocumentButton>
+          <CreateDocumentButton variant={"outline"}>
             <FilePlus />
             New Document
           </CreateDocumentButton>
-          <Button onClick={undo} size={"icon"}>
+          <Button variant={"outline"} onClick={undo} size={"icon"}>
             <Undo2 />
           </Button>
-          <Button onClick={redo} size={"icon"}>
+          <Button variant={"outline"} onClick={redo} size={"icon"}>
             <Redo2 />
           </Button>
         </div>
-        <DocumentTitle />
+        
         <Menu />
       </div>
       <div className="flex gap-1">
+        <DocumentTitle />
         <ExportMarkdownButton />
       </div>
     </div>

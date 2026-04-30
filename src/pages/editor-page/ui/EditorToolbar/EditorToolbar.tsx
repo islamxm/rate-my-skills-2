@@ -31,7 +31,6 @@ import {
   TriangleAlert,
   OctagonAlert,
   Braces,
-  Puzzle,
   TextAlignStart,
 } from "lucide-react";
 import { useSelectionActions } from "@/hooks/useSelectionActions";
@@ -94,7 +93,7 @@ export const EditorToolbar = () => {
       { node: listNode, parentId: null },
       { node: listItemNode, parentId: listNode.id, index: 0 },
     ]);
-    
+
     selectNode(listNode.id);
     focuseNode(listItemNode.id);
   };
@@ -180,7 +179,7 @@ export const EditorToolbar = () => {
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant={"outline"} size={"icon"} onClick={addParagraph}>
-            <TextAlignStart/>
+            <TextAlignStart />
           </Button>
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create Paragraph</TooltipContent>
@@ -224,14 +223,6 @@ export const EditorToolbar = () => {
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant={"outline"} size={"icon"} onClick={addCode}>
-            <Code2 />
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side={"right"}>Create Code</TooltipContent>
-      </Tooltip>
-      <Tooltip>
-        <TooltipTrigger asChild>
           <Button variant={"outline"} size={"icon"} onClick={() => addList(true)}>
             <ListOrdered />
           </Button>
@@ -261,6 +252,14 @@ export const EditorToolbar = () => {
           </Button>
         </TooltipTrigger>
         <TooltipContent side={"right"}>Create Image block</TooltipContent>
+      </Tooltip>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button variant={"outline"} size={"icon"} onClick={addCode}>
+            <Code2 />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent side={"right"}>Create Code</TooltipContent>
       </Tooltip>
       <Tooltip>
         <TooltipTrigger asChild>

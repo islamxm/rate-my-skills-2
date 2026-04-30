@@ -4,7 +4,7 @@ import type { TextareaAutosizeProps } from "react-textarea-autosize";
 import type { Tabs } from "radix-ui";
 import { MOM } from "@/mom";
 import { useDocumentActions, useNodeSelection } from "@/hooks";
-import { useDebounceCallback } from "usehooks-ts";
+import { useDebounceCallback } from "@shared/lib";
 
 type ViewType = "preview" | "raw";
 
@@ -12,22 +12,22 @@ export function useRaw(node: MOMRaw) {
   const { updateNode } = useDocumentActions();
   const { isFocused } = useNodeSelection(node.id);
   const ref = useRef<HTMLTextAreaElement>(null);
-  const [value, setValue] = useState(node.value);
   const [viewType, setViewType] = useState<ViewType>("raw");
 
-  const onValueChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setValue(e.target.value);
-    lazySave();
-  };
+  useEffect(() => {
+    if (!ref.current) return;
+    ref.current.value = node.value;
+  }, [node.value]);
 
   const save = () => {
-    const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(node.value, value);
+    if (!ref.current) return;
+    const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(node.value, ref.current.value);
     if (canSkipUpdate) return;
     updateNode<MOMRaw>({
       nodeId: node.id,
       patch: {
         id: node.id,
-        value,
+        value: ref.current.value,
         type: "raw",
         parentId: node.parentId,
       },
@@ -58,8 +58,8 @@ export function useRaw(node: MOMRaw) {
   }, [isFocused]);
 
   const fieldProps: TextareaAutosizeProps = {
-    value,
-    onChange: onValueChange,
+    defaultValue: node.value,
+    onChange: lazySave,
     placeholder: "...",
     minRows: 1,
     spellCheck: false,

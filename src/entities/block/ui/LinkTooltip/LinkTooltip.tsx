@@ -107,7 +107,7 @@ export const LinkTooltip: FC<Props> = ({ containerRef, addUrl }) => {
           transition={{ duration: 0.1 }}
           ref={refs?.setFloating}
           style={floatingStyles}
-          className="flex bg-background rounded-md shadow border"
+          className="flex bg-background rounded-md shadow border z-50"
         >
           <InputGroup className="border-none shadow-none rounded-r-none">
             <InputGroupInput

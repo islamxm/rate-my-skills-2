@@ -361,6 +361,30 @@ export const createNewBlockThunk = (): AppThunk => (dispatch, getState) => {
       );
       break;
     }
+    case "code":
+      dispatch(
+        documentStoreActions.insertNode({
+          node: {
+            ...MOM.Engine.createCode(currentNode.lang, null),
+            id,
+          },
+          parentId: null,
+          afterNodeId: currentNode.id,
+        }),
+      );
+      break;
+    case "raw":
+      dispatch(
+        documentStoreActions.insertNode({
+          node: {
+            ...MOM.Engine.createRaw(),
+            id,
+          },
+          parentId: null,
+          afterNodeId: currentNode.id,
+        }),
+      );
+      break;
   }
   dispatch(selectionStoreActions.selectAndFocusNode(id));
 };

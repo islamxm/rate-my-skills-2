@@ -16,7 +16,6 @@ const getValueForBlockVisualHeight = (node: MOMAllContent) => {
   return element.textContent.length;
 };
 
-//потом можно сделать так чтобы имел высоту в зависимости от контента чтобы визуально можно было понять размер блока
 const Block = ({ nodeId }: { nodeId: string }) => {
   const node = useNode(nodeId);
   const { selectNode } = useSelectionActions();
