@@ -8,5 +8,7 @@ export type SelectionFragment = {
 };
 
 export type CursorPosition = {
-  offset: number;
+  // offset: number;
+  start: number;
+  end: number;
 };

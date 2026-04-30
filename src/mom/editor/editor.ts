@@ -315,21 +315,34 @@ function resetNativeFormattingExecCommands() {
 /** для сохранения позиции каретки */
 export function saveCursor(element: HTMLElement): CursorPosition | null {
   const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) return null;
+  if (!selection || !selection.anchorNode || selection.rangeCount === 0) return null;
+
+  const inEditableContainer =
+    selection.anchorNode.parentElement?.closest("[data-editable]") && selection.focusNode?.parentElement?.closest("[data-editable");
+
+  if (!inEditableContainer) return null;
 
   const range = selection.getRangeAt(0);
 
-  const preRange = document.createRange();
-  preRange.selectNodeContents(element);
-  preRange.setEnd(range.endContainer, range.endOffset);
+  const getOffset = (node: Node, offset: number) => {
+    const preRange = document.createRange();
+    preRange.selectNodeContents(element);
+    preRange.setEnd(node, offset);
+    return preRange.toString().length;
+  };
 
-  const offset = preRange.toString().length;
+  const start = getOffset(range.startContainer, range.startOffset);
 
-  return { offset };
+  const result = {
+    start,
+    end: selection.isCollapsed ? start : getOffset(range.endContainer, range.endOffset),
+  };
+
+  return result;
 }
 
-/** для восстановления позиции каретки */ //нужно восстановить вместе с выделением
-export function restoreCursor(element: HTMLElement, position: CursorPosition | null): void {
+/** для восстановления позиции каретки */
+export function restoreCursor(element: HTMLElement, position: CursorPosition | null) {
   if (!position) return;
 
   const selection = window.getSelection();
@@ -337,27 +350,35 @@ export function restoreCursor(element: HTMLElement, position: CursorPosition | n
 
   const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
 
-  let remaining = position.offset;
-  let targetNode: Text | null = null;
-  let targetOffset = 0;
+  let currentPos = 0;
+  let startNode: Text | null = null;
+  let startOffset = 0;
+  let endNode: Text | null = null;
+  let endOffset = 0;
 
   while (walker.nextNode()) {
     const textNode = walker.currentNode as Text;
-    const length = textNode.length;
+    const len = textNode.length;
 
-    if (remaining <= length) {
-      targetNode = textNode;
-      targetOffset = remaining;
-      break;
+    if (!startNode && position.start <= currentPos + len) {
+      startNode = textNode;
+      startOffset = position.start - currentPos;
     }
 
-    remaining -= length;
+    if (!endNode && position.end <= currentPos + len) {
+      endNode = textNode;
+      endOffset = position.end - currentPos;
+    }
+
+    currentPos += len;
+    if (startNode && endNode) break;
   }
 
-  if (!targetNode) return;
+  if (!startNode || !endNode) return;
+
   const range = document.createRange();
-  range.setStart(targetNode, targetOffset);
-  range.collapse(true);
+  range.setStart(startNode, startOffset);
+  range.setEnd(endNode, endOffset);
 
   selection.removeAllRanges();
   selection.addRange(range);

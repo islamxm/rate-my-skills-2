@@ -17,7 +17,6 @@ type ParseType = "deep" | "plain";
  * @param {MOMAllContent} node Редактируемая MOM нода
  * @param {ParseType} parseType Способ парсинга содержимого html элемента в MOM структуру
  * @param {boolean} disableFormatting Отключение форматирование в редактируемой ноде
- * @returns
  */
 export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType: ParseType = "deep", disableFormatting?: boolean) {
   const children = useChildren(node.id);
@@ -27,31 +26,8 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
   const ref = useRef<T | null>(null);
   const { restoreCursor, saveCursor } = useCursor<T>(ref);
 
-  // синхронизация при изменении стейта
-  useEffect(() => {
-    if (!ref.current || !node) return;
-    let html = "";
-    if (parseType === "plain" && "value" in node) {
-      html = node.value;
-    }
-    if (parseType === "deep") {
-      html = MOM.Serializer.momToHTML(children, node.id);
-    }
-    ref.current.innerHTML = html;
-  }, [children, parseType, node]);
-
-  useEffect(() => {
-    if (!ref.current) return;
-    if (isFocused) {
-      ref.current.focus();
-      restoreCursor();
-    }
-  }, [isFocused, restoreCursor]);
-
-  /** сохранение результата редактирования (данные беруться из dom) */
   const save = () => {
     if (!ref.current) return;
-    saveCursor();
     if (parseType === "plain" && "value" in node) {
       const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(ref.current.textContent, node.value);
       if (canSkipUpdate) return;
@@ -64,42 +40,13 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
       const nodes = MOM.Parser.domToMom(ref.current);
 
       const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(MOM.Serializer.momToHTML(children, node.id), MOM.Serializer.momToHTML(nodes, node.id));
-      if (nodes.length === 0 || canSkipUpdate) return;
+      if (canSkipUpdate) return;
       commitInlineEdit({ nodeId: node.id, nodes });
     }
   };
 
-  const lazySave = useDebounceCallback(save, 800);
-
-  /** при отключении фокуса предварительно сохраняем результат*/
-  const onBlur = () => {
-    save();
-    blur();
-  };
-
-  /** при клике на блок гарантированно фиксируем в сторе*/
-  const onSelectBlock = () => {
-    focuseNode(node.id);
-  };
-
-  /** обработка действий которые идут через клавишу */
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    shortcut(e.nativeEvent, ["Ctrl", "U"], () => applyFormat("lineThrough"), true, true);
-    shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true, true);
-    shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true, true);
-  };
-
-  /** чистим от форматирования вставляемый текст */
-  const onPaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const text = e.clipboardData.getData("text/plain");
-    MOM.Editor.pastePlainText(text);
-    save();
-  };
-
   const applyFormat = (format: keyof MOMTextMarks) => {
     if (!ref.current || disableFormatting) return;
-    saveCursor();
     const result = MOM.Editor.applyFormat(format, children);
     if (!result) return;
     const canSkipUpdate = MOM.Editor.shoulSkipUpdateState(
@@ -111,8 +58,28 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
     commitInlineEdit({ nodeId: node.id, nodes: result.nodes });
   };
 
-  /** очистка от браузерного мусора при каждом вводе и сохранение актуального состояния DOM в рефе */
-  // надо подумать про перформанс
+  const onBlur = () => {
+    save();
+    blur();
+  };
+
+  const onSelectBlock = () => {
+    focuseNode(node.id);
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    shortcut(e.nativeEvent, ["Ctrl", "U"], () => applyFormat("lineThrough"), true, true);
+    shortcut(e.nativeEvent, ["Ctrl", "I"], () => applyFormat("italic"), true, true);
+    shortcut(e.nativeEvent, ["Ctrl", "B"], () => applyFormat("bold"), true, true);
+  };
+
+  const onPaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const text = e.clipboardData.getData("text/plain");
+    MOM.Editor.pastePlainText(text);
+    save();
+  };
+
   const onInput = (e: React.FormEvent) => {
     if (!ref.current) return;
     saveCursor();
@@ -125,7 +92,6 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
     lazySave();
   };
 
-  /** сброс браузерных стилей перед вводом */
   const onBeforeInput = (e: InputEvent) => {
     if (e.inputType && e.inputType.startsWith("format")) {
       e.preventDefault();
@@ -139,7 +105,29 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
     }, 0);
   };
 
-  /** обработка события beforeinput (оказывается реакт не имплементирует его - onBeforeInput что то другое) */
+  const lazySave = useDebounceCallback(save, 800);
+  const lazySaveCursor = useDebounceCallback(saveCursor, 70);
+
+  useEffect(() => {
+    if (!ref.current || !node) return;
+    let html = "";
+    if (parseType === "plain" && "value" in node) {
+      html = node.value;
+    }
+    if (parseType === "deep") {
+      html = MOM.Serializer.momToHTML(children, node.id);
+    }
+    ref.current.innerHTML = html;
+  }, [children, parseType, node, saveCursor]);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    if (isFocused) {
+      ref.current.focus();
+      restoreCursor();
+    }
+  }, [isFocused, restoreCursor]);
+
   useEffect(() => {
     if (!ref.current) return;
     const r = ref.current;
@@ -148,6 +136,14 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
       r?.removeEventListener("beforeinput", onBeforeInput);
     };
   }, []);
+
+  useEffect(() => {
+    if (!isFocused) return;
+    document.addEventListener("selectionchange", lazySaveCursor);
+    return () => {
+      document.removeEventListener("selectionchange", lazySaveCursor);
+    };
+  }, [lazySaveCursor, isFocused]);
 
   const editorProps: HTMLProps<T> = {
     contentEditable: true,
