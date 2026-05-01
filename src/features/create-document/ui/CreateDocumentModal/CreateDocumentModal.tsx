@@ -28,15 +28,18 @@ export const CreateDocumentModal: FC<Props> = ({ open, setOpen }) => {
     }
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.KeyboardEvent) => {
+    if(e.code !== "Enter") return;
     e.preventDefault();
+    e.stopPropagation();
     createNewDocument();
+    onModalClose(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onModalClose}>
       <DialogContent>
-        <form onSubmit={onSubmit} className="flex flex-col gap-[20px]">
+        <form onKeyDownCapture={onSubmit} className="flex flex-col gap-[20px]">
           <DialogTitle>Create New Document</DialogTitle>
           <FieldGroup>
             <Field>

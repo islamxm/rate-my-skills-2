@@ -23,7 +23,7 @@ export function useCreateDocument() {
     const time = Date.now();
     const document: MOMDocumentEntity = {
       id,
-      title: documentTitle ?? `README_${time}`,
+      title: documentTitle || `README_${time}`,
       thumbnail: null,
       lastModified: time,
       isFavorite: false,
