@@ -24,6 +24,7 @@ export function momToHTML(
 ) { 
   return nodes.map((node) => momNodeToHTML(node, parentId)).join("");
 }
+
 function momNodeToHTML(node: MOMAllContent, parentId: string | null) {
   if (!MOM.Guard.isTextNode(node)) return "";
 

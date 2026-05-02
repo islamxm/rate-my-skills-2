@@ -1,15 +1,4 @@
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-  DialogTitle,
-  Field,
-  FieldGroup,
-  Input,
-  Label,
-  Button,
-} from "@shared/ui";
+import { Dialog, DialogClose, DialogContent, DialogFooter, DialogTitle, Field, FieldGroup, Input, Label, Button } from "@shared/ui";
 import { type FC } from "react";
 import { useCreateDocument } from "../../lib/useCreateDocument";
 
@@ -28,12 +17,16 @@ export const CreateDocumentModal: FC<Props> = ({ open, setOpen }) => {
     }
   };
 
-  const onSubmit = async (e: React.KeyboardEvent) => {
-    if(e.code !== "Enter") return;
-    e.preventDefault();
-    e.stopPropagation();
+  const save = () => {
     createNewDocument();
     onModalClose(false);
+  };
+
+  const onSubmit = async (e: React.KeyboardEvent) => {
+    if (e.code !== "Enter") return;
+    e.preventDefault();
+    e.stopPropagation();
+    save();
   };
 
   return (
@@ -51,7 +44,7 @@ export const CreateDocumentModal: FC<Props> = ({ open, setOpen }) => {
             <DialogClose asChild>
               <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type={"submit"} loading={isLoading}>
+            <Button onClick={save} loading={isLoading}>
               Create
             </Button>
           </DialogFooter>
