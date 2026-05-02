@@ -77,6 +77,7 @@ export function useListEditor(
     e.preventDefault();
     const text = e.clipboardData.getData("text/plain");
     MOM.Editor.pastePlainText(text);
+    saveCursor();
     save();
   };
 

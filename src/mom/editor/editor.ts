@@ -7,7 +7,7 @@ import { nanoid } from "nanoid";
 /** Применить форматирование текста */
 export function applyFormat(format: keyof MOMTextMarks, nodes: Array<MOMAllContent>) {
   const selection = window.getSelection();
-  if (!hasSelection(selection)) return;
+  if (!selection || isNothingSelected(selection)) return;
   const range = getRange(selection);
 
   const rangeSnapshot = {
@@ -140,6 +140,11 @@ function getElementData(element: Element) {
 /** если есть какое то выделение */
 function hasSelection(selection?: Selection | null): selection is Selection {
   return !!selection && !!selection.rangeCount && !selection.isCollapsed;
+}
+
+/** если ничего не выделено */
+function isNothingSelected(selection: Selection) {
+  return !selection.rangeCount || selection.isCollapsed;
 }
 
 /** получаем диапазон выделения */
@@ -315,7 +320,7 @@ function resetNativeFormattingExecCommands() {
 /** Сохранение позиции каретки */
 export function saveCursor(element: HTMLElement): CursorPosition | null {
   const selection = window.getSelection();
-  if (!hasSelection(selection) || !selection.anchorNode) return null;
+  if (!selection || !selection.anchorNode || selection.rangeCount === 0) return null;
 
   const inEditableContainer =
     selection.anchorNode.parentElement?.closest("[data-editable]") && selection.focusNode?.parentElement?.closest("[data-editable");
@@ -392,15 +397,13 @@ export function shoulSkipUpdateState(prev: string, current: string) {
 /** Вставка сырого текста */
 export function pastePlainText(text: string) {
   const selection = window.getSelection();
-  if (!hasSelection(selection)) return;
+  if (!selection || !selection.rangeCount) return;
   const range = getRange(selection);
   range.deleteContents();
   const textNode = document.createTextNode(text);
   range.insertNode(textNode);
-  range.setStartAfter(textNode);
-  range.setEndAfter(textNode);
-  selection.removeAllRanges();
-  selection.addRange(range);
+
+  selection.collapse(textNode, textNode.length);
 }
 
 /** Вставка курсора в конец */
@@ -409,7 +412,7 @@ export function setCursorToEnd(el: HTMLElement) {
   range.selectNodeContents(el);
   range.collapse(false);
   const selection = window.getSelection();
-  if (!hasSelection(selection)) return;
+  if (!selection || !selection.rangeCount) return;
   selection.removeAllRanges();
   selection.addRange(range);
 }

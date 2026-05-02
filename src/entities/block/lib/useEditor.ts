@@ -81,7 +81,9 @@ export function useEditor<T extends HTMLElement>(node: MOMAllContent, parseType:
   const onPaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
     const text = e.clipboardData.getData("text/plain");
+    saveCursor();
     MOM.Editor.pastePlainText(text);
+    saveCursor();
     save();
   };
 
